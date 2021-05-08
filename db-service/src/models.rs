@@ -62,6 +62,7 @@ pub struct Shift {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<ObjectId>,
     pub doctor: Option<ObjectId>,
+    pub clinic: Option<ObjectId>,    
     pub hospital: Option<ObjectId>,
     pub start_time: u32,
     pub duration: u32

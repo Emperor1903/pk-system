@@ -57,6 +57,13 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("api/province/_search").route(web::post().to(api::search::<Province>)))
             .service(web::resource("api/province/_delete").route(web::post().to(api::delete::<Province>)))
             .service(web::resource("api/province/_relate").route(web::post().to(api::relate::<Province>)))
+        // Shift
+            .service(web::resource("api/shift/_new").route(web::post().to(api::create::<Shift>)))
+            .service(web::resource("api/shift/_get").route(web::post().to(api::get::<Shift>)))
+            .service(web::resource("api/shift/_update").route(web::post().to(api::update::<Shift>)))
+            .service(web::resource("api/shift/_search").route(web::post().to(api::search::<Shift>)))
+            .service(web::resource("api/shift/_delete").route(web::post().to(api::delete::<Shift>)))
+            .service(web::resource("api/shift/_relate").route(web::post().to(api::relate::<Shift>)))
             
             
     }).bind(host_url)?
