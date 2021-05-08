@@ -45,7 +45,9 @@ pub struct Hospital {
     pub location: String,
     pub province: ObjectId,
     pub clinic: Vec<ObjectId>,
-    pub doctor: Vec<ObjectId>
+    pub specializations: Vec<ObjectId>,
+    pub doctor: Vec<ObjectId>,
+    pub telephone: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -55,3 +57,12 @@ pub struct Province {
     pub name: String,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Shift {
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
+    pub id: Option<ObjectId>,
+    pub doctor: Option<ObjectId>,
+    pub hospital: Option<ObjectId>,
+    pub start_time: u32,
+    pub duration: u32
+}
