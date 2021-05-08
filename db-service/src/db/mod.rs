@@ -6,8 +6,7 @@ use mongodb::sync::{Client, Database};
 use lazy_static::lazy_static;
 use bson::oid::ObjectId;
 
-use crate::utils::config::Config;
-
+use crate::config::Config;
 
 lazy_static! {
     pub static ref DB: Database = get_mongodb_db();

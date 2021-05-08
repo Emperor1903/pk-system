@@ -1,13 +1,14 @@
 mod api;
 mod db;
-mod utils;
 mod models;
+mod config;
+mod utils;
 
 use actix_web::{web, App, HttpServer, middleware};
 use dotenv;
 use models::*;
 
-use crate::utils::{config::Config};
+use crate::config::Config;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -34,24 +35,28 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("api/hospital/_update").route(web::post().to(api::update::<Hospital>)))
             .service(web::resource("api/hospital/_search").route(web::post().to(api::search::<Hospital>)))
             .service(web::resource("api/hospital/_delete").route(web::post().to(api::delete::<Hospital>)))
+            .service(web::resource("api/hospital/_relate").route(web::post().to(api::relate::<Hospital>)))
         // Specialization
             .service(web::resource("api/specialization/_new").route(web::post().to(api::create::<Specialization>)))
             .service(web::resource("api/specialization/_get").route(web::post().to(api::get::<Specialization>)))
             .service(web::resource("api/specialization/_update").route(web::post().to(api::update::<Specialization>)))
             .service(web::resource("api/specialization/_search").route(web::post().to(api::search::<Specialization>)))
             .service(web::resource("api/specialization/_delete").route(web::post().to(api::delete::<Specialization>)))
+            .service(web::resource("api/specialization/_relate").route(web::post().to(api::relate::<Specialization>)))
         // Clinic
             .service(web::resource("api/clinic/_new").route(web::post().to(api::create::<Clinic>)))
             .service(web::resource("api/clinic/_get").route(web::post().to(api::get::<Clinic>)))
             .service(web::resource("api/clinic/_update").route(web::post().to(api::update::<Clinic>)))
             .service(web::resource("api/clinic/_search").route(web::post().to(api::search::<Clinic>)))
             .service(web::resource("api/clinic/_delete").route(web::post().to(api::delete::<Clinic>)))
+            .service(web::resource("api/clinic/_relate").route(web::post().to(api::relate::<Clinic>)))
         // Province
             .service(web::resource("api/province/_new").route(web::post().to(api::create::<Province>)))
             .service(web::resource("api/province/_get").route(web::post().to(api::get::<Province>)))
             .service(web::resource("api/province/_update").route(web::post().to(api::update::<Province>)))
             .service(web::resource("api/province/_search").route(web::post().to(api::search::<Province>)))
             .service(web::resource("api/province/_delete").route(web::post().to(api::delete::<Province>)))
+            .service(web::resource("api/province/_relate").route(web::post().to(api::relate::<Province>)))
             
             
     }).bind(host_url)?

@@ -1,5 +1,3 @@
-pub mod config;
-
 use std::any::type_name;
 
 pub fn get_struct_name<T>() -> String {
