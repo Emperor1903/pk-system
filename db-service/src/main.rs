@@ -27,6 +27,7 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("api/doctor/_update").route(web::post().to(api::update::<Doctor>)))
             .service(web::resource("api/doctor/_search").route(web::post().to(api::search::<Doctor>)))
             .service(web::resource("api/doctor/_delete").route(web::post().to(api::delete::<Doctor>)))
+            .service(web::resource("api/doctor/_relate").route(web::post().to(api::relate::<Doctor>)))
         // Hospital
             .service(web::resource("api/hospital/_new").route(web::post().to(api::create::<Hospital>)))
             .service(web::resource("api/hospital/_get").route(web::post().to(api::get::<Hospital>)))

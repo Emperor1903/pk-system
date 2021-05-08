@@ -54,3 +54,4 @@ pub struct Province {
     pub id: Option<ObjectId>,
     pub name: String,
 }
+

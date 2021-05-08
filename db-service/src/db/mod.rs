@@ -57,3 +57,12 @@ pub fn get
 {
     query::get::<T>(id)
 }
+
+pub fn search_relate
+    <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
+    (query: SearchQuery) -> Result<Vec<bson::Document>, mongodb::error::Error>
+{
+    let id = query.id.unwrap();
+    let field = query.keyword.unwrap();
+    query::search_relate::<T>(id, field, query.start, query.limit)
+}

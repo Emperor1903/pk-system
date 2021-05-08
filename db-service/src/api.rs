@@ -7,6 +7,7 @@ use crate::db;
 
 #[derive(Deserialize)]
 pub struct SearchQuery {
+    pub id: Option<ObjectId>,
     pub keyword: Option<String>,
     pub start: Option<u32>,
     pub limit: Option<i32>
@@ -59,4 +60,11 @@ pub async fn get
 {
     let data = item.into_inner();
     do_response(db::get::<T>(&data)).await
+}
+
+pub async fn relate
+    <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
+    (web::Query(query): web::Query<SearchQuery>) -> HttpResponse
+{
+    do_response(db::search_relate::<T>(query)).await
 }

@@ -1,5 +1,3 @@
-extern crate mongodb;
-
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use core::fmt::Debug;
@@ -105,16 +103,32 @@ pub fn get
 
 pub fn search_relate
     <T: Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
-    (id: ObjectId, field: String)
+    (id: ObjectId, field: String, skip: Option<u32>, limit: Option<i32>)
      -> Result<Vec<bson::Document>, mongodb::error::Error>
 {
     let collection = get_collection::<T>();
     let match_field = format!("${}", field);
-    let pipelines = vec![doc!{
+    let mut pipelines = Vec::new();
+    pipelines.push(doc!{
         "$match": {
              match_field: id
         }
-    }];
+    });
+    if let Some(v) = skip { 
+        let stage = doc! {"$skip": v};
+        pipelines.push(stage);
+    }
+    if let Some(mut v) = limit {
+        if v > 20 {
+            v = 20;
+        }
+        let stage = doc! {"$limit": v};
+        pipelines.push(stage);
+    } else {
+        let stage = doc! {"$limit": 10};
+        pipelines.push(stage);
+    }
+    
     let cursor = collection.aggregate(pipelines, None)?;
     let documents: Vec<_> = cursor.map(|doc| doc.unwrap()).collect();
     Ok(documents)
