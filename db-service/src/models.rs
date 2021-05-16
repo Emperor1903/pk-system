@@ -31,7 +31,7 @@ pub struct Clinic {
     pub id: Option<ObjectId>,    
     pub name: String,
     pub desc: String,
-    pub hospital: String,
+    pub hospital: Option<ObjectId>,
     pub specializations: Vec<ObjectId>,
     pub doctor: Vec<ObjectId>
 }
@@ -67,6 +67,21 @@ pub struct Shift {
     pub clinic: Option<ObjectId>,
     #[serde(skip_serializing_if = "Option::is_none")]    
     pub hospital: Option<ObjectId>,
-    pub start_time: u32,
-    pub duration: u32
+    pub start_time: u32, // timestamp in second
+    pub duration: u32, // time in second
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Book {
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
+    pub id: Option<ObjectId>,
+    pub name: String,
+    pub date_of_birth: u32, // timestamp in second
+    pub email: String,
+    pub phone_number: String,
+    pub gender_is_male: bool,
+    pub clinic: ObjectId,
+    pub doctor: Option<ObjectId>,
+    pub time: u32, // timestamp in second
+    pub desc_symptoms: String,
 }

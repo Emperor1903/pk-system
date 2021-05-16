@@ -12,9 +12,8 @@ serde = {version = "1.0.125", features = ["derive"]}
 dotenv = "0.15.0"
 config = "0.11.0"
 lazy_static = "1.4.0"
-bson = "1.2.2"
 
 [dependencies.mongodb]
-version = "2.0.0-alpha.1"
+version = "1.2.1"
 default-features = false
 features = ["sync"]
