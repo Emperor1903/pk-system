@@ -57,13 +57,10 @@ pub fn search
         pipelines.push(stage);
     }
     let cursor = collection.aggregate(pipelines, None)?;
-    let documents: Vec<_> = cursor.map(|doc| doc.unwrap()).collect();
-    let mut result: Vec<T> = Vec::new();
-    for d in documents {
-        let t: T = bson::from_bson(Bson::Document(d)).unwrap();
-        result.push(t);
-    }
-    Ok(result)
+    let bson_to_t = |d| bson::from_bson(Bson::Document(d)).unwrap();
+    let documents: Vec<_> = cursor.map(|doc| bson_to_t(doc.unwrap())).collect();
+
+    Ok(documents)
 }
 
 pub fn update
