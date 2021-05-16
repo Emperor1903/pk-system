@@ -1,9 +1,10 @@
 FROM rust:1.31
 
-WORKDIR /app
+WORKDIR /usr/src/db-service
 
 COPY . .
 
+RUN cargo build --release
 RUN cargo install --path .
 
-CMD ["cargo run --release"]
+CMD ["./db-service"]
