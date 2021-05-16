@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde::de::DeserializeOwned;
 use std::fmt::Debug;
 use actix_web::{web, http, HttpResponse};
-use bson::oid::ObjectId;
+use mongodb::bson::oid::ObjectId;
 use crate::db;
 
 #[derive(Deserialize)]

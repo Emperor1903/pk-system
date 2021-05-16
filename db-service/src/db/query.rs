@@ -1,13 +1,12 @@
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use core::fmt::Debug;
-use bson::{doc, Bson};
+use mongodb::bson;
+use mongodb::bson::{doc, Bson, oid::ObjectId};
 use crate::utils::get_struct_name;
 use super::DB;
 
-use bson::oid::ObjectId;
-
-fn get_collection<T>() -> mongodb::sync::Collection<bson::Document> {
+fn get_collection<T>() -> mongodb::sync::Collection<mongodb::bson::Document> {
     let name = &get_struct_name::<T>()[..];
     DB.collection(name)
 }

@@ -4,7 +4,7 @@ use std::fmt::Debug;
 use crate::api::SearchQuery;
 use mongodb::sync::{Client, Database};
 use lazy_static::lazy_static;
-use bson::oid::ObjectId;
+use mongodb::bson::oid::ObjectId;
 
 use crate::config::Config;
 
@@ -59,7 +59,7 @@ pub fn get
 
 pub fn search_relate
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (query: SearchQuery) -> Result<Vec<bson::Document>, mongodb::error::Error>
+    (query: SearchQuery) -> Result<Vec<mongodb::bson::Document>, mongodb::error::Error>
 {
     let id = query.id.unwrap();
     let field = query.keyword.unwrap();
