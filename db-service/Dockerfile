@@ -4,7 +4,6 @@ WORKDIR /usr/src/db-service
 
 COPY . .
 
-RUN cargo build --release
 RUN cargo install --path .
 
-CMD ["./db-service"]
+CMD ["db-service"]
