@@ -16,9 +16,8 @@ pub struct Doctor {
     pub name: String,
     pub short_intro: String,
     pub intro: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub clinic: Option<ObjectId>,
-    pub specializations: Vec<String>,
+    pub specializations: Vec<ObjectId>,
     pub positions: Vec<String>,
     pub experiences: Vec<String>,
     pub awards: Vec<String>,
@@ -42,7 +41,7 @@ pub struct Hospital {
     pub id: Option<ObjectId>,    
     pub name: String,
     pub desc: String,
-    pub location: String,
+    pub address: String,
     pub province: ObjectId,
     pub clinic: Vec<ObjectId>,
     pub specializations: Vec<ObjectId>,
@@ -91,13 +90,4 @@ pub struct User {
     #[serde(rename = "_id")]
     pub username: String,
     pub password_hash: String,
-    pub is_admin: bool,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct LoginSession {
-    #[serde(rename = "_id")]
-    pub token: String,
-    pub expired_time: u32,
-    pub user: String,
 }

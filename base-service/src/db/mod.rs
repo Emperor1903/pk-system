@@ -1,7 +1,7 @@
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::fmt::Debug;
-use crate::api::SearchQuery;
+use crate::api::form::SearchQuery;
 use mongodb::sync::{Client, Database};
 use lazy_static::lazy_static;
 use mongodb::bson::{oid::ObjectId, Bson};
@@ -43,10 +43,11 @@ pub fn update
 }
 
 pub fn delete
-    <T:'static + Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (id: &ObjectId) -> Result<ObjectId, mongodb::error::Error>
+    <T:'static + Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone,
+     U: Clone>
+    (id: U) -> Result<U, mongodb::error::Error> where Bson: From<U>
 {
-    query::delete::<T>(id)
+    query::delete::<T, U>(id)
 }
 
 pub fn get

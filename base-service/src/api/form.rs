@@ -14,3 +14,8 @@ pub struct UserForm {
     pub username: String,
     pub password: String
 }
+
+#[derive(Deserialize)]
+pub struct HospitalByProvince {
+    pub province: ObjectId,
+}

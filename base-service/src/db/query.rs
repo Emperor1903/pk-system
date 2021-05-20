@@ -78,13 +78,13 @@ pub fn update
 }
 
 pub fn delete
-    <T: Clone + Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
-    (id: &ObjectId)
-     ->  Result<ObjectId, mongodb::error::Error>
+    <T: Clone + Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send,
+     U: Clone + From<U>>
+    (id: U) -> Result<U, mongodb::error::Error> where Bson: From<U>
 {
     let collection = get_collection::<T>();
-    collection.delete_one(doc! {"_id": id}, None)?;
-    Ok((*id).clone())
+    collection.delete_one(doc! {"_id": id.clone()}, None)?;
+    Ok(id)
 }
 
 pub fn get

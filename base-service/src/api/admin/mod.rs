@@ -37,7 +37,7 @@ pub async fn delete
     (item: web::Json<ObjectId>, id: Identity) -> HttpResponse
 {
     let data = item.into_inner();
-    do_auth_response(db::delete::<T>(&data), id).await
+    do_auth_response(db::delete::<T, ObjectId>(data), id).await
 }
 
 pub async fn get
