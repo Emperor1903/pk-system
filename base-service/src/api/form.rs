@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use mongodb::bson::oid::ObjectId;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct SearchQuery {
     pub id: Option<ObjectId>,
     pub keyword: Option<String>,

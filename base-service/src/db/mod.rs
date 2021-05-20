@@ -65,5 +65,6 @@ pub fn search_relate
 {
     let id = query.id.unwrap();
     let field = query.keyword.unwrap();
+    println!("{:?}", id);
     query::search_relate::<T>(id, field, query.start, query.limit)
 }

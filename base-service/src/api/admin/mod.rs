@@ -50,8 +50,10 @@ pub async fn get
 
 pub async fn relate
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (web::Query(query): web::Query<SearchQuery>, id: Identity) -> HttpResponse
+    (item: web::Json<SearchQuery>, id: Identity) -> HttpResponse
 {
+    let query = item.into_inner();
+    println!("{:?}", query);
     do_auth_response(db::search_relate::<T>(query), id).await
 }
 

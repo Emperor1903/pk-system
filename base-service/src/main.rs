@@ -36,16 +36,12 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("api/doctor/_new").route(web::post().to(api::admin::create::<Doctor>)))
             .service(web::resource("api/doctor/_get").route(web::post().to(api::admin::get::<Doctor>)))
             .service(web::resource("api/doctor/_update").route(web::post().to(api::admin::update::<Doctor>)))
-            .service(web::resource("api/doctor/_search").route(web::post().to(api::admin::search::<Doctor>)))
             .service(web::resource("api/doctor/_delete").route(web::post().to(api::admin::delete::<Doctor>)))
             .service(web::resource("api/doctor/_relate").route(web::post().to(api::admin::relate::<Doctor>)))
         // Hospital
             .service(web::resource("api/hospital/_new").route(web::post().to(api::admin::create::<Hospital>)))
-            .service(web::resource("api/hospital/_get").route(web::post().to(api::admin::get::<Hospital>)))
             .service(web::resource("api/hospital/_update").route(web::post().to(api::admin::update::<Hospital>)))
-            .service(web::resource("api/hospital/_search").route(web::post().to(api::admin::search::<Hospital>)))
             .service(web::resource("api/hospital/_delete").route(web::post().to(api::admin::delete::<Hospital>)))
-            .service(web::resource("api/hospital/_relate").route(web::post().to(api::admin::relate::<Hospital>)))
         // Specialization
             .service(web::resource("api/specialization/_new").route(web::post().to(api::admin::create::<Specialization>)))
             .service(web::resource("api/specialization/_get").route(web::post().to(api::admin::get::<Specialization>)))
@@ -85,8 +81,11 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("api/auth/_new").route(web::post().to(api::auth::create_user)))
             .service(web::resource("api/auth/_login").route(web::post().to(api::auth::login)))
             .service(web::resource("api/auth/_logout").route(web::post().to(api::auth::logout)))
-       // Public API
-            .service(web::resource("api/auth/_new").route(web::post().to(api::guest::get_hospital_by_province)))
+        // Public API
+            .service(web::resource("api/hospital/_get").route(web::post().to(api::guest::get::<Hospital>)))                        
+            .service(web::resource("api/doctor/_search").route(web::post().to(api::guest::search::<Doctor>)))            
+            .service(web::resource("api/hospital/_relate").route(web::post().to(api::guest::relate::<Hospital>)))
+
             
     }).bind(host_url)?
         .run()

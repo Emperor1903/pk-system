@@ -104,11 +104,10 @@ pub fn search_relate
      -> Result<Vec<bson::Document>, mongodb::error::Error>
 {
     let collection = get_collection::<T>();
-    let match_field = format!("${}", field);
     let mut pipelines = Vec::new();
     pipelines.push(doc!{
         "$match": {
-             match_field: id
+             field.clone(): id
         }
     });
     if let Some(v) = skip { 
@@ -116,8 +115,8 @@ pub fn search_relate
         pipelines.push(stage);
     }
     if let Some(mut v) = limit {
-        if v > 20 {
-            v = 20;
+        if v > 1000 {
+            v = 1000;
         }
         let stage = doc! {"$limit": v};
         pipelines.push(stage);
@@ -125,8 +124,8 @@ pub fn search_relate
         let stage = doc! {"$limit": 10};
         pipelines.push(stage);
     }
-    
     let cursor = collection.aggregate(pipelines, None)?;
+
     let documents: Vec<_> = cursor.map(|doc| doc.unwrap()).collect();
     Ok(documents)
 }
