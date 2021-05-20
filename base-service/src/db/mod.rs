@@ -1,7 +1,7 @@
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::fmt::Debug;
-use crate::api::form::SearchQuery;
+use crate::api::form::{SearchQuery, RelateSearchQuery};
 use mongodb::sync::{Client, Database};
 use lazy_static::lazy_static;
 use mongodb::bson::{oid::ObjectId, Bson};
@@ -61,10 +61,9 @@ pub fn get
 
 pub fn search_relate
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (query: SearchQuery) -> Result<Vec<mongodb::bson::Document>, mongodb::error::Error>
+    (query: RelateSearchQuery) -> Result<Vec<mongodb::bson::Document>, mongodb::error::Error>
 {
-    let id = query.id.unwrap();
-    let field = query.keyword.unwrap();
-    println!("{:?}", id);
-    query::search_relate::<T>(id, field, query.start, query.limit)
+    let ids = query.ids.unwrap();
+    let fields = query.fields.unwrap();
+    query::search_relate::<T>(ids, fields, query.start, query.limit)
 }

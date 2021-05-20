@@ -3,6 +3,8 @@ use serde::Serialize;
 use core::fmt::Debug;
 use mongodb::bson;
 use mongodb::bson::{doc, Bson, oid::ObjectId};
+
+use crate::api::form::{SearchQuery, RelateSearchQuery};
 use crate::utils::get_struct_name;
 use super::DB;
 
@@ -100,16 +102,19 @@ pub fn get
 
 pub fn search_relate
     <T: Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
-    (id: ObjectId, field: String, skip: Option<u32>, limit: Option<i32>)
+    (ids: Vec<ObjectId>, fields: Vec<String>, skip: Option<u32>, limit: Option<i32>)
      -> Result<Vec<bson::Document>, mongodb::error::Error>
 {
     let collection = get_collection::<T>();
     let mut pipelines = Vec::new();
-    pipelines.push(doc!{
-        "$match": {
-             field.clone(): id
-        }
-    });
+    for i in 0..ids.len() {
+        pipelines.push(doc!{
+            "$match": {
+                fields[i].clone(): ids[i].clone()
+            }
+        });
+    }
+
     if let Some(v) = skip { 
         let stage = doc! {"$skip": v};
         pipelines.push(stage);
