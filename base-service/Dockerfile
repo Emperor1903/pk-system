@@ -6,4 +6,4 @@ COPY . .
 
 RUN cargo install --path .
 
-CMD ["db-service"]
+CMD ["base-service"]
