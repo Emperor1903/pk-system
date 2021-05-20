@@ -1,17 +1,7 @@
-use serde::{Deserialize, Serialize};
-use serde::de::DeserializeOwned;
-use std::fmt::Debug;
+use serde::Serialize;
 use actix_web::{web, http, HttpResponse};
-use mongodb::bson::oid::ObjectId;
+use actix_identity::Identity;
 use crate::db;
-
-#[derive(Deserialize)]
-pub struct SearchQuery {
-    pub id: Option<ObjectId>,
-    pub keyword: Option<String>,
-    pub start: Option<u32>,
-    pub limit: Option<i32>
-}
 
 pub async fn do_response<T:'static + std::marker::Send + Serialize>
     (db_rs: Result<T, mongodb::error::Error>) -> HttpResponse
@@ -23,50 +13,17 @@ pub async fn do_response<T:'static + std::marker::Send + Serialize>
     }
 }
 
-pub async fn create
-    <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (item: web::Json<T>) -> HttpResponse
+pub async fn do_auth_response<T:'static + std::marker::Send + Serialize>
+    (db_rs: Result<T, mongodb::error::Error>, id: Identity) -> HttpResponse
 {
-    let data: T = item.into_inner();
-    do_response(db::create::<T>(&data)).await
+    match id.identity() {
+        Some(_) => {
+            do_response(db_rs).await
+        }
+        None => HttpResponse::NonAuthoritativeInformation().body("Ok")
+    }    
 }
 
-pub async fn search
-    <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (web::Query(query): web::Query<SearchQuery>) -> HttpResponse
-{
-    do_response(db::search::<T>(query)).await
-}
-
-pub async fn update
-    <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (item: web::Json<T>) -> HttpResponse
-{
-    let data: T = item.into_inner();
-    do_response(db::update::<T>(&data)).await
-}
-
-pub async fn delete
-    <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (item: web::Json<ObjectId>) -> HttpResponse
-{
-    let data = item.into_inner();
-    do_response(db::delete::<T>(&data)).await
-}
-
-pub async fn get
-    <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>    
-    (item: web::Json<ObjectId>) -> HttpResponse
-{
-    let data = item.into_inner();
-    do_response(db::get::<T, ObjectId>(data)).await
-}
-
-pub async fn relate
-    <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (web::Query(query): web::Query<SearchQuery>) -> HttpResponse
-{
-    do_response(db::search_relate::<T>(query)).await
-}
-
-pub mod authentication;
+pub mod auth;
+pub mod admin;
+pub mod form;
