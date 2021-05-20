@@ -7,11 +7,7 @@ use mongodb::bson::oid::ObjectId;
 use actix_identity::Identity;
 
 use crate::db;
-use crate::api::{do_auth_response,
-                 form::{
-                     SearchQuery,
-                     RelateSearchQuery,
-                 }};
+use crate::api::{do_auth_response, form::{SearchQuery,RelateSearchQuery}};
 
 pub async fn create
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
@@ -59,4 +55,3 @@ pub async fn relate
     let query = item.into_inner();
     do_auth_response(db::search_relate::<T>(query), id).await
 }
-

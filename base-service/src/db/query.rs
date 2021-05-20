@@ -27,8 +27,8 @@ pub fn create
 pub fn search
     <T: Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
     (keyword: Option<String>,
-     start: Option<u32>,
-     limit: Option<i32>)
+     start: Option<u64>,
+     limit: Option<i64>)
      -> Result<Vec<T>, mongodb::error::Error>
 {
     let collection = get_collection::<T>();
@@ -102,7 +102,7 @@ pub fn get
 
 pub fn search_relate
     <T: Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
-    (ids: Vec<ObjectId>, fields: Vec<String>, skip: Option<u32>, limit: Option<i32>)
+    (ids: Vec<ObjectId>, fields: Vec<String>, skip: Option<u64>, limit: Option<i64>, start_time: Option<u64>, end_time: Option<u64>)
      -> Result<Vec<bson::Document>, mongodb::error::Error>
 {
     let collection = get_collection::<T>();
@@ -126,9 +126,32 @@ pub fn search_relate
         let stage = doc! {"$limit": v};
         pipelines.push(stage);
     } else {
-        let stage = doc! {"$limit": 10};
+        let stage = doc! {"$limit": 1000};
         pipelines.push(stage);
     }
+
+    if let Some(v) = start_time {
+        pipelines.push(doc!{
+            "$match": {
+                "start_time": {
+                    "$gte": v
+                }
+            }
+        });
+    }
+
+    if let Some(v) = end_time {
+        pipelines.push(doc!{
+            "$match": {
+                "end_time": {
+                    "$lte": v
+                }
+            }
+        });
+    }
+
+    
+    
     let cursor = collection.aggregate(pipelines, None)?;
 
     let documents: Vec<_> = cursor.map(|doc| doc.unwrap()).collect();

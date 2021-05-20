@@ -66,8 +66,8 @@ pub struct Shift {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hospital: Option<ObjectId>,
     pub client_number: u32,
-    pub start_time: u32, // timestamp in second
-    pub duration: u32, // time in second    
+    pub start_time: u64, // timestamp in second
+    pub end_time: u64, // time in second    
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -75,13 +75,13 @@ pub struct BookingTicket {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<ObjectId>,
     pub name: String,
-    pub date_of_birth: u32, // timestamp in second
+    pub date_of_birth: u64, // timestamp in second
     pub email: String,
     pub phone_number: String,
     pub gender_is_male: bool,
     pub clinic: ObjectId,
     pub doctor: Option<ObjectId>,
-    pub time: u32, // timestamp in second
+    pub time: u64, // timestamp in second
     pub desc_symptoms: String,
 }
 

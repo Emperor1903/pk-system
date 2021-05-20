@@ -65,5 +65,5 @@ pub fn search_relate
 {
     let ids = query.ids.unwrap();
     let fields = query.fields.unwrap();
-    query::search_relate::<T>(ids, fields, query.start, query.limit)
+    query::search_relate::<T>(ids, fields, query.start, query.limit, query.start_time, query.end_time)
 }

@@ -5,8 +5,8 @@ use mongodb::bson::oid::ObjectId;
 pub struct SearchQuery {
     pub id: Option<ObjectId>,
     pub keyword: Option<String>,
-    pub start: Option<u32>,
-    pub limit: Option<i32>
+    pub start: Option<u64>,
+    pub limit: Option<i64>
 }
 
 #[derive(Deserialize)]
@@ -24,6 +24,8 @@ pub struct HospitalByProvince {
 pub struct RelateSearchQuery {
     pub ids: Option<Vec<ObjectId>>,
     pub fields: Option<Vec<String>>,
-    pub start: Option<u32>,
-    pub limit: Option<i32>
+    pub start: Option<u64>,
+    pub limit: Option<i64>,
+    pub start_time: Option<u64>,
+    pub end_time: Option<u64>
 }
