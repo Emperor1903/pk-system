@@ -82,9 +82,16 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("api/auth/_login").route(web::post().to(api::auth::login)))
             .service(web::resource("api/auth/_logout").route(web::post().to(api::auth::logout)))
         // Public API
+
+        // Hospital
             .service(web::resource("api/hospital/_get").route(web::post().to(api::guest::get::<Hospital>)))                        
-            .service(web::resource("api/doctor/_search").route(web::post().to(api::guest::search::<Doctor>)))            
+            .service(web::resource("api/hospital/_search").route(web::post().to(api::guest::search::<Hospital>)))            
             .service(web::resource("api/hospital/_relate").route(web::post().to(api::guest::relate::<Hospital>)))
+
+        // Province
+            .service(web::resource("api/province/_get").route(web::post().to(api::guest::get::<Province>)))                        
+            .service(web::resource("api/province/_search").route(web::post().to(api::guest::search::<Province>)))            
+            .service(web::resource("api/province/_relate").route(web::post().to(api::guest::relate::<Province>)))            
 
             
     }).bind(host_url)?
