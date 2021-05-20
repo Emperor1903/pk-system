@@ -6,7 +6,7 @@ use mongodb::bson::oid::ObjectId;
 
 use crate::models::*;
 use crate::db;
-use crate::api::{do_response, form::SearchQuery};
+use crate::api::{do_response, form::{SearchQuery, RelateSearchQuery}};
 
 
 pub async fn search
@@ -26,9 +26,8 @@ pub async fn get
 
 pub async fn relate
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (item: web::Json<SearchQuery>) -> HttpResponse
+    (item: web::Json<RelateSearchQuery>) -> HttpResponse
 {
     let query = item.into_inner();
-    println!("{:?}", query);
     do_response(db::search_relate::<T>(query)).await
 }

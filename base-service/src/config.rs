@@ -16,7 +16,6 @@ pub struct MongodbConfig {
 pub struct Config {
     pub server: ServerConfig,
     pub mongodb: MongodbConfig,
-//    pub private_key: String
 }
 
 impl Config {

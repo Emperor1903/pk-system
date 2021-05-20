@@ -60,14 +60,14 @@ pub struct Province {
 pub struct Shift {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<ObjectId>,
-    #[serde(skip_serializing_if = "Option::is_none")]    
     pub doctor: Option<ObjectId>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub clinic: Option<ObjectId>,
-    #[serde(skip_serializing_if = "Option::is_none")]    
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub hospital: Option<ObjectId>,
+    pub client_number: u32,
     pub start_time: u32, // timestamp in second
-    pub duration: u32, // time in second
+    pub duration: u32, // time in second    
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

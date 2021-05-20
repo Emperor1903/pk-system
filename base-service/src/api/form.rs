@@ -19,3 +19,11 @@ pub struct UserForm {
 pub struct HospitalByProvince {
     pub province: ObjectId,
 }
+
+#[derive(Deserialize)]
+pub struct RelateSearchQuery {
+    pub ids: Option<Vec<ObjectId>>,
+    pub fields: Option<Vec<String>>,
+    pub start: Option<u32>,
+    pub limit: Option<i32>
+}

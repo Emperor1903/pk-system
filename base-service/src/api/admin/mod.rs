@@ -7,7 +7,11 @@ use mongodb::bson::oid::ObjectId;
 use actix_identity::Identity;
 
 use crate::db;
-use crate::api::{do_auth_response, form::SearchQuery};
+use crate::api::{do_auth_response,
+                 form::{
+                     SearchQuery,
+                     RelateSearchQuery,
+                 }};
 
 pub async fn create
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
@@ -50,10 +54,9 @@ pub async fn get
 
 pub async fn relate
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (item: web::Json<SearchQuery>, id: Identity) -> HttpResponse
+    (item: web::Json<RelateSearchQuery>, id: Identity) -> HttpResponse
 {
     let query = item.into_inner();
-    println!("{:?}", query);
     do_auth_response(db::search_relate::<T>(query), id).await
 }
 
