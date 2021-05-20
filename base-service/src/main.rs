@@ -15,6 +15,7 @@ const PRIVATE_KEY: [u8; 32] = [4, 141, 82, 28, 211, 109, 76, 44, 193, 135, 179, 
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     dotenv::from_filename(".env").ok();
     let config = Config::from_env().unwrap();
     let host_url = format!("{}:{}", config.server.host, config.server.port);
@@ -32,7 +33,6 @@ async fn main() -> std::io::Result<()> {
                 ))
             .wrap(middleware::Logger::default())
             .data(web::JsonConfig::default().limit(4096))
-            
         // ***************Admin API            
         // Doctor
             .service(web::resource("api/doctor/_new").route(web::post().to(api::admin::create::<Doctor>)))
@@ -89,10 +89,6 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("api/shift/_get").route(web::post().to(api::guest::get::<Shift>)))
             .service(web::resource("api/shift/_search").route(web::post().to(api::guest::search::<Shift>)))
             .service(web::resource("api/shift/_relate").route(web::post().to(api::guest::relate::<Shift>)))
-        // Province
-            .service(web::resource("api/province/_get").route(web::post().to(api::guest::get::<Province>)))                        
-            .service(web::resource("api/province/_search").route(web::post().to(api::guest::search::<Province>)))            
-            .service(web::resource("api/province/_relate").route(web::post().to(api::guest::relate::<Province>)))
         // BookingTicket
             .service(web::resource("api/book/_get").route(web::post().to(api::guest::get::<BookingTicket>)))
             .service(web::resource("api/book/_search").route(web::post().to(api::guest::search::<BookingTicket>)))
