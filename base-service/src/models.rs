@@ -30,8 +30,10 @@ pub struct Clinic {
     pub id: Option<ObjectId>,    
     pub name: String,
     pub desc: String,
+    pub address: String,
     pub hospital: Option<ObjectId>,
     pub specializations: Vec<ObjectId>,
+    pub time_desc: String,
     //pub doctors: Vec<ObjectId>,
     pub phone_num: String,
 }
