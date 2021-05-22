@@ -45,7 +45,7 @@ pub struct Hospital {
     pub address: String,
     pub province: ObjectId,
     //pub clinics: Vec<ObjectId>,
-    pub specializations: Vec<ObjectId>,
+    //pub specializations: Vec<ObjectId>,
     //pub doctors: Vec<ObjectId>,
     pub phone_num: String,
 }

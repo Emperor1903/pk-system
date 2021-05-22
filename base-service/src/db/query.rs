@@ -15,13 +15,13 @@ fn get_collection<T>() -> mongodb::sync::Collection<mongodb::bson::Document> {
 
 pub fn create
     <T: Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (obj: &T) -> Result<T, mongodb::error::Error>
+    (obj: &T) -> Result<Bson, mongodb::error::Error>
 {
     let collection = get_collection::<T>();
     let serialized_data = bson::to_bson(&obj)?;
     let document = serialized_data.as_document().unwrap();
-    collection.insert_one(document.to_owned(), None)?;
-    Ok((*obj).clone())
+    let rs = collection.insert_one(document.to_owned(), None)?;
+    Ok(rs.inserted_id)
 }
 
 pub fn search

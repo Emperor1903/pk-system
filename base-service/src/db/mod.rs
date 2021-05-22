@@ -22,7 +22,7 @@ pub mod query;
 
 pub fn create
     <T:'static + Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (data: &T) -> Result<T, mongodb::error::Error>
+    (data: &T) -> Result<Bson, mongodb::error::Error>
 {
     query::create(data)
 }
