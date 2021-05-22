@@ -21,7 +21,9 @@ pub struct Doctor {
     pub positions: Vec<String>,
     pub experiences: Vec<String>,
     pub awards: Vec<String>,
-    pub educations: Vec<String>
+    pub educations: Vec<String>,
+    pub email: String,
+    pub phone_num: String
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -84,7 +86,7 @@ pub struct BookingTicket {
     pub gender_is_male: bool,
     pub clinic: ObjectId,
     pub doctor: Option<ObjectId>,
-    pub time: u64, // timestamp in second
+    pub start_time: u64, // timestamp in second
     pub desc_symptoms: String,
 }
 
@@ -93,4 +95,5 @@ pub struct User {
     #[serde(rename = "_id")]
     pub username: String,
     pub password_hash: String,
+    pub role: u8,
 }
