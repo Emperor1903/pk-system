@@ -32,7 +32,8 @@ pub struct Clinic {
     pub desc: String,
     pub hospital: Option<ObjectId>,
     pub specializations: Vec<ObjectId>,
-    pub doctor: Vec<ObjectId>
+    //pub doctors: Vec<ObjectId>,
+    pub phone_num: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -43,10 +44,10 @@ pub struct Hospital {
     pub desc: String,
     pub address: String,
     pub province: ObjectId,
-    pub clinic: Vec<ObjectId>,
+    //pub clinics: Vec<ObjectId>,
     pub specializations: Vec<ObjectId>,
-    pub doctor: Vec<ObjectId>,
-    pub telephone: String,
+    //pub doctors: Vec<ObjectId>,
+    pub phone_num: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -77,7 +78,7 @@ pub struct BookingTicket {
     pub name: String,
     pub date_of_birth: u64, // timestamp in second
     pub email: String,
-    pub phone_number: String,
+    pub phone_num   : String,
     pub gender_is_male: bool,
     pub clinic: ObjectId,
     pub doctor: Option<ObjectId>,
