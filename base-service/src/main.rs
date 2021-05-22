@@ -6,6 +6,7 @@ mod utils;
 
 use actix_identity::{CookieIdentityPolicy, IdentityService};
 use actix_web::{web, App, HttpServer, middleware};
+use actix_cors::Cors;
 use dotenv;
 use models::*;
 
@@ -25,6 +26,9 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(|| {
         App::new()
+            .wrap(
+                Cors::permissive()
+            )
             .wrap(
                 IdentityService::new(
                     CookieIdentityPolicy::new(&PRIVATE_KEY)
