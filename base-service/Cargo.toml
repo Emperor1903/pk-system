@@ -8,13 +8,16 @@ edition = "2018"
 
 [dependencies]
 actix-web = "3"
+actix-identity = "0.3"
+actix-cors = "0.5.4"
+
 serde = {version = "1.0.125", features = ["derive"]}
 dotenv = "0.15.0"
 config = "0.11.0"
 lazy_static = "1.4.0"
 sha2 = "0.9.5"
-actix-identity = "0.3"
 env_logger = "0.8.3"
+
 
 [dependencies.mongodb]
 version = "1.2.1"
