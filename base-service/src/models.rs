@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use bson::oid::ObjectId;
+use mongodb::bson::oid::ObjectId;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Specialization {
@@ -16,9 +16,8 @@ pub struct Doctor {
     pub name: String,
     pub short_intro: String,
     pub intro: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub clinic: Option<ObjectId>,
-    pub specializations: Vec<String>,
+    pub specializations: Vec<ObjectId>,
     pub positions: Vec<String>,
     pub experiences: Vec<String>,
     pub awards: Vec<String>,
@@ -31,9 +30,12 @@ pub struct Clinic {
     pub id: Option<ObjectId>,    
     pub name: String,
     pub desc: String,
-    pub hospital: String,
+    pub address: String,
+    pub hospital: Option<ObjectId>,
     pub specializations: Vec<ObjectId>,
-    pub doctor: Vec<ObjectId>
+    pub time_desc: String,
+    //pub doctors: Vec<ObjectId>,
+    pub phone_num: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -42,12 +44,12 @@ pub struct Hospital {
     pub id: Option<ObjectId>,    
     pub name: String,
     pub desc: String,
-    pub location: String,
+    pub address: String,
     pub province: ObjectId,
-    pub clinic: Vec<ObjectId>,
-    pub specializations: Vec<ObjectId>,
-    pub doctor: Vec<ObjectId>,
-    pub telephone: String,
+    //pub clinics: Vec<ObjectId>,
+    //pub specializations: Vec<ObjectId>,
+    //pub doctors: Vec<ObjectId>,
+    pub phone_num: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -62,7 +64,33 @@ pub struct Shift {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<ObjectId>,
     pub doctor: Option<ObjectId>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub clinic: Option<ObjectId>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub hospital: Option<ObjectId>,
-    pub start_time: u32,
-    pub duration: u32
+    pub client_number: u32,
+    pub start_time: u64, // timestamp in second
+    pub end_time: u64, // time in second    
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct BookingTicket {
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
+    pub id: Option<ObjectId>,
+    pub name: String,
+    pub date_of_birth: u64, // timestamp in second
+    pub email: String,
+    pub phone_num   : String,
+    pub gender_is_male: bool,
+    pub clinic: ObjectId,
+    pub doctor: Option<ObjectId>,
+    pub time: u64, // timestamp in second
+    pub desc_symptoms: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct User {
+    #[serde(rename = "_id")]
+    pub username: String,
+    pub password_hash: String,
 }

@@ -15,7 +15,7 @@ pub struct MongodbConfig {
 #[derive(Deserialize)]
 pub struct Config {
     pub server: ServerConfig,
-    pub mongodb: MongodbConfig
+    pub mongodb: MongodbConfig,
 }
 
 impl Config {

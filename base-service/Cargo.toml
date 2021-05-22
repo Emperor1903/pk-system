@@ -1,15 +1,25 @@
 [package]
-name = "app-service"
+name = "base-service"
 version = "0.1.0"
-authors = ["duong <mdduong1309@gmail.com>"]
+authors = ["mdduong <mdduong1309@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 actix-web = "3"
+actix-identity = "0.3"
+actix-cors = "0.5.4"
+
 serde = {version = "1.0.125", features = ["derive"]}
 dotenv = "0.15.0"
 config = "0.11.0"
 lazy_static = "1.4.0"
-bson = "1.2.2"
+sha2 = "0.9.5"
+env_logger = "0.8.3"
+
+
+[dependencies.mongodb]
+version = "1.2.1"
+default-features = false
+features = ["sync"]
