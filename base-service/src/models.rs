@@ -16,7 +16,9 @@ pub struct Doctor {
     pub name: String,
     pub short_intro: String,
     pub intro: String,
-    pub clinic: Option<ObjectId>,
+    pub clinic: ObjectId,
+    #[serde(skip_serializing_if = "Option::is_none")]    
+    pub hospital: Option<ObjectId>,
     pub specializations: Vec<ObjectId>,
     pub positions: Vec<String>,
     pub experiences: Vec<String>,
@@ -37,7 +39,6 @@ pub struct Clinic {
     pub hospital: Option<ObjectId>,
     pub specializations: Vec<ObjectId>,
     pub time_desc: String,
-    //pub doctors: Vec<ObjectId>,
     pub phone_num: String,
 }
 
@@ -81,6 +82,7 @@ pub struct BookingTicket {
     #[serde(rename = "_id", skip_serializing)]
     pub id: Option<ObjectId>,    
     pub shift: ObjectId,
+    pub ledger: ObjectId,
     pub desc_symptoms: String,
 }
 
