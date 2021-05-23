@@ -72,9 +72,9 @@ pub struct Shift {
     pub clinic: Option<ObjectId>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hospital: Option<ObjectId>,
-    pub client_number: u32,
-    pub start_time: u64, // timestamp in second
-    pub end_time: u64, // timestamp in second    
+    pub client_number: i32,
+    pub start_time: i64, // timestamp in second
+    pub end_time: i64, // timestamp in second    
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -91,7 +91,7 @@ pub struct Ledger {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]    
     pub id: Option<ObjectId>,
     pub name: String,
-    pub date_of_birth: u64, // timestamp in second
+    pub date_of_birth: i64, // timestamp in second
     pub contact: ObjectId,
     pub gender_is_male: bool,
     #[serde(skip_serializing)]
@@ -103,7 +103,13 @@ pub struct User {
     #[serde(rename = "_id")]
     pub username: String,
     pub password_hash: String,
-    pub role: u8,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct UserInfo {
+    #[serde(rename = "_id")]    
+    pub username: String,
+    pub role: i32,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

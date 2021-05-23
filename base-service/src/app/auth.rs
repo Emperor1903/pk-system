@@ -5,7 +5,7 @@ use std::collections::HashSet;
 use mongodb::bson::Bson;
 
 use crate::db;
-use crate::models::User;
+use crate::models::{User, UserInfo};
 use crate::api::form::UserForm;
 
 lazy_static! {
@@ -35,7 +35,7 @@ fn get_valid_username_character_set() -> HashSet<char> {
 }
 
 fn valid_username(username: &String) -> bool {
-    if username.len() > 20 || username.len() < 6 { return false }
+    if username.len() > 20 || username.len() < 5 { return false }
     for i in username.chars() {
         if !VALID_USERNAME_CHARACTER_SET.contains(&i) { return false }
     }
@@ -43,13 +43,12 @@ fn valid_username(username: &String) -> bool {
 }
 
 fn valid_password(password: &String) -> bool {
-    if password.len() > 50 || password.len() < 8 { return false }
-    println!("{}", password.len());    
+    if password.len() > 50 || password.len() < 5 { return false }
     true
 }
 
 fn create_user
-    (form: &UserForm, role: u8) -> Option<Result<Bson, mongodb::error::Error>>
+    (form: &UserForm, role: i32) -> Option<Result<Bson, mongodb::error::Error>>
 {
     if !valid_username(&form.username) {
         return None
@@ -62,10 +61,15 @@ fn create_user
     let user = User {
         username: form.username.clone(),
         password_hash: hash_password(&form.password),
-        role: role,
     };
 
-    Some(db::create::<User>(&user))
+    let user_info = UserInfo {
+        username: form.username.clone(),        
+        role: role,
+    };
+    let _t = db::create::<User>(&user).expect("failed to create user");
+    let t = db::create::<UserInfo>(&user_info);
+    Some(t)
 }
 
 pub fn create_admin_user
@@ -89,7 +93,7 @@ pub fn create_staff_user
 }
 
 fn remember_user
-    (id: &Identity, username: &String, role: u8)
+    (id: &Identity, username: &String, role: i32)
 {
     match role {
         0 => {
@@ -103,12 +107,12 @@ fn remember_user
 }
 
 pub fn check_role
-    (id: &Identity, role: u8) -> bool
+    (id: &Identity, role: i32) -> bool
 {
     match id.identity() {
         Some(identity) => {
             let role_in_id = &identity.to_string()[..2];
-            let role_in_id: u8 = role_in_id.parse::<u8>().unwrap();
+            let role_in_id: i32 = role_in_id.parse::<i32>().unwrap();
             role_in_id == role
         }
         _ => false
@@ -121,15 +125,14 @@ pub fn login
     match db::get::<User, String>(form.username.clone()) {
         Ok(user) => {
             if hash_password(&form.password) == user.password_hash {
-                remember_user(&id, &user.username, user.role);
+                let user_info = db::get::<UserInfo, String>(form.username.clone()).unwrap();
+                remember_user(&id, &user.username, user_info.role);
                 Some(user)
             } else {
                 None
             }
         }
-        Err(_) => {
-            None
-        }
+        Err(_) => None
     }
 }
 
@@ -137,4 +140,17 @@ pub fn logout
     (id: &Identity)
 {
     id.forget();
+}
+
+pub fn get_indentity
+    (id: &Identity)
+     -> Option<Result<UserInfo, mongodb::error::Error>>
+{
+    match id.identity() {
+        Some(identity) => {
+            let user_id = &identity.to_string()[2..];
+            Some(db::get::<UserInfo, String>(user_id.to_string()))
+        }
+        _ => None
+    }
 }

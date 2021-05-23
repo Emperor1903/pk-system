@@ -17,7 +17,7 @@ const PRIVATE_KEY: [u8; 32] = [4, 141, 82, 28, 211, 109, 76, 44, 193, 135, 179, 
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
     dotenv::from_filename(".env").ok();
     let config = Config::from_env().unwrap();
     let host_url = format!("{}:{}", config.server.host, config.server.port);
@@ -86,6 +86,7 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("admin/shift/_delete").route(web::post().to(api::admin::delete::<Shift>)))
         // ***************Public API
         // AUthentcation
+            .service(web::resource("api/auth/_me").route(web::post().to(api::auth::get_indentity)))            
             .service(web::resource("api/auth/_login").route(web::post().to(api::auth::login)))
             .service(web::resource("api/auth/_logout").route(web::post().to(api::auth::logout)))
         // Doctor

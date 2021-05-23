@@ -14,7 +14,9 @@ pub async fn
 pub async fn
     create_staff_user(id: Identity, user: web::Form<UserForm>) -> HttpResponse
 {
-    do_response(auth::create_staff_user(&id, &user).unwrap()).await
+    let t = auth::create_staff_user(&id, &user).unwrap();
+    println!("{:?}", t);
+    do_response(t).await
 }
 
 pub async fn login
@@ -33,4 +35,13 @@ pub async fn logout
 {
     auth::logout(&id);
     HttpResponse::Ok().body("Ok")
+}
+
+pub async fn get_indentity
+    (id: Identity) -> HttpResponse
+{
+    match auth::get_indentity(&id) {
+        Some(user) => do_response(user).await,
+        None => HttpResponse::Ok().body("")
+    }
 }
