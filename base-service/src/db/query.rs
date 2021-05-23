@@ -1,33 +1,34 @@
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use core::fmt::Debug;
-use bson::{doc, Bson};
+use mongodb::bson;
+use mongodb::bson::{doc, Bson, oid::ObjectId};
+
+use crate::api::form::{SearchQuery, RelateSearchQuery};
 use crate::utils::get_struct_name;
 use super::DB;
 
-use bson::oid::ObjectId;
-
-fn get_collection<T>() -> mongodb::sync::Collection<bson::Document> {
+fn get_collection<T>() -> mongodb::sync::Collection<mongodb::bson::Document> {
     let name = &get_struct_name::<T>()[..];
     DB.collection(name)
 }
 
 pub fn create
     <T: Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (obj: &T) -> Result<T, mongodb::error::Error>
+    (obj: &T) -> Result<Bson, mongodb::error::Error>
 {
     let collection = get_collection::<T>();
     let serialized_data = bson::to_bson(&obj)?;
     let document = serialized_data.as_document().unwrap();
-    collection.insert_one(document.to_owned(), None)?;
-    Ok((*obj).clone())
+    let rs = collection.insert_one(document.to_owned(), None)?;
+    Ok(rs.inserted_id)
 }
 
 pub fn search
     <T: Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
     (keyword: Option<String>,
-     start: Option<u32>,
-     limit: Option<i32>)
+     start: Option<u64>,
+     limit: Option<i64>)
      -> Result<Vec<T>, mongodb::error::Error>
 {
     let collection = get_collection::<T>();
@@ -57,13 +58,10 @@ pub fn search
         pipelines.push(stage);
     }
     let cursor = collection.aggregate(pipelines, None)?;
-    let documents: Vec<_> = cursor.map(|doc| doc.unwrap()).collect();
-    let mut result: Vec<T> = Vec::new();
-    for d in documents {
-        let t: T = bson::from_bson(Bson::Document(d)).unwrap();
-        result.push(t);
-    }
-    Ok(result)
+    let bson_to_t = |d| bson::from_bson(Bson::Document(d)).unwrap();
+    let documents: Vec<_> = cursor.map(|doc| bson_to_t(doc.unwrap())).collect();
+
+    Ok(documents)
 }
 
 pub fn update
@@ -82,19 +80,20 @@ pub fn update
 }
 
 pub fn delete
-    <T: Clone + Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
-    (id: &ObjectId)
-     ->  Result<ObjectId, mongodb::error::Error>
+    <T: Clone + Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send,
+     U: Clone + From<U>>
+    (id: U) -> Result<U, mongodb::error::Error> where Bson: From<U>
 {
     let collection = get_collection::<T>();
-    collection.delete_one(doc! {"_id": id}, None)?;
-    Ok((*id).clone())
+    collection.delete_one(doc! {"_id": id.clone()}, None)?;
+    Ok(id)
 }
 
 pub fn get
-    <T: Clone + Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
-    (id: &ObjectId)
-     ->  Result<T, mongodb::error::Error>
+    <T: Clone + Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send,
+     U: Clone + From<U>>
+    (id: U)
+     ->  Result<T, mongodb::error::Error> where Bson: From<U>
 {
     let collection = get_collection::<T>();
     let rs = collection.find_one(doc! {"_id": id}, None)?;
@@ -103,33 +102,58 @@ pub fn get
 
 pub fn search_relate
     <T: Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
-    (id: ObjectId, field: String, skip: Option<u32>, limit: Option<i32>)
+    (ids: Vec<ObjectId>, fields: Vec<String>, skip: Option<u64>, limit: Option<i64>, start_time: Option<u64>, end_time: Option<u64>)
      -> Result<Vec<bson::Document>, mongodb::error::Error>
 {
     let collection = get_collection::<T>();
-    let match_field = format!("${}", field);
     let mut pipelines = Vec::new();
-    pipelines.push(doc!{
-        "$match": {
-             match_field: id
-        }
-    });
+    for i in 0..ids.len() {
+        pipelines.push(doc!{
+            "$match": {
+                fields[i].clone(): ids[i].clone()
+            }
+        });
+    }
+
     if let Some(v) = skip { 
         let stage = doc! {"$skip": v};
         pipelines.push(stage);
     }
     if let Some(mut v) = limit {
-        if v > 20 {
-            v = 20;
+        if v > 1000 {
+            v = 1000;
         }
         let stage = doc! {"$limit": v};
         pipelines.push(stage);
     } else {
-        let stage = doc! {"$limit": 10};
+        let stage = doc! {"$limit": 1000};
         pipelines.push(stage);
     }
+
+    if let Some(v) = start_time {
+        pipelines.push(doc!{
+            "$match": {
+                "start_time": {
+                    "$gte": v
+                }
+            }
+        });
+    }
+
+    if let Some(v) = end_time {
+        pipelines.push(doc!{
+            "$match": {
+                "end_time": {
+                    "$lte": v
+                }
+            }
+        });
+    }
+
+    
     
     let cursor = collection.aggregate(pipelines, None)?;
+
     let documents: Vec<_> = cursor.map(|doc| doc.unwrap()).collect();
     Ok(documents)
 }
