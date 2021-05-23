@@ -3,7 +3,7 @@ use mongodb::bson::oid::ObjectId;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Specialization {
-    #[serde(rename = "_id", skip_serializing)]
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<ObjectId>,
     pub name: String,
     pub desc: String
@@ -11,7 +11,7 @@ pub struct Specialization {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Doctor {
-    #[serde(rename = "_id", skip_serializing)]    
+    #[serde(rename = "_id", skip_deserializing)]    
     pub id: Option<ObjectId>,
     pub name: String,
     pub short_intro: String,
@@ -30,7 +30,7 @@ pub struct Doctor {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Clinic {
-    #[serde(rename = "_id", skip_serializing)]
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<ObjectId>,    
     pub name: String,
     pub desc: String,
@@ -44,7 +44,7 @@ pub struct Clinic {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Hospital {
-    #[serde(rename = "_id", skip_serializing)]    
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]        
     pub id: Option<ObjectId>,    
     pub name: String,
     pub desc: String,
@@ -59,14 +59,14 @@ pub struct Hospital {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Province {
-    #[serde(rename = "_id", skip_serializing)]
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<ObjectId>,
     pub name: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Shift {
-    #[serde(rename = "_id", skip_serializing)]
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<ObjectId>,
     pub doctor: Option<ObjectId>,
     pub clinic: Option<ObjectId>,
@@ -79,7 +79,7 @@ pub struct Shift {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BookingTicket {
-    #[serde(rename = "_id", skip_serializing)]
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<ObjectId>,    
     pub shift: ObjectId,
     pub ledger: ObjectId,
@@ -88,7 +88,7 @@ pub struct BookingTicket {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Ledger {
-    #[serde(rename = "_id", skip_serializing)]    
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]    
     pub id: Option<ObjectId>,
     pub name: String,
     pub date_of_birth: u64, // timestamp in second
@@ -100,7 +100,7 @@ pub struct Ledger {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct User {
-    #[serde(rename = "_id", skip_serializing)]
+    #[serde(rename = "_id")]
     pub username: String,
     pub password_hash: String,
     pub role: u8,
