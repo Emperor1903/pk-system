@@ -29,7 +29,7 @@ pub fn create
 
 pub fn search
     <T:'static + Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (query: SearchQuery) -> Result<Vec<mongodb::bson::Document>, mongodb::error::Error>
+    (query: SearchQuery) -> Result<mongodb::bson::Document, mongodb::error::Error>
 {
     query::search::<T>(query.keyword, query.start, query.limit)
 }
@@ -61,7 +61,7 @@ pub fn get
 
 pub fn search_relate
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (query: RelateSearchQuery) -> Result<Vec<mongodb::bson::Document>, mongodb::error::Error>
+    (query: RelateSearchQuery) -> Result<mongodb::bson::Document, mongodb::error::Error>
 {
     let ids = query.ids.unwrap();
     let fields = query.fields.unwrap();

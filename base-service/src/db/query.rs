@@ -28,7 +28,7 @@ pub fn search
     (keyword: Option<String>,
      start: Option<u64>,
      limit: Option<i64>)
-     -> Result<Vec<bson::Document>, mongodb::error::Error>
+     -> Result<bson::Document, mongodb::error::Error>
 {
     let collection = get_collection::<T>();
     let mut pipelines = Vec::new();
@@ -72,7 +72,7 @@ pub fn search
     
     let documents: Vec<_> = cursor.map(|doc| doc.unwrap()).collect();
 
-    Ok(documents)
+    Ok(documents[0].clone())
 }
 
 pub fn update
@@ -115,7 +115,7 @@ pub fn search_relate
     <T: Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
     (ids: Vec<ObjectId>, fields: Vec<String>, skip: Option<u64>,
      limit: Option<i64>, start_time: Option<u64>, end_time: Option<u64>)
-     -> Result<Vec<bson::Document>, mongodb::error::Error>
+     -> Result<bson::Document, mongodb::error::Error>
 {
     let collection = get_collection::<T>();
     let mut pipelines = Vec::new();
@@ -173,5 +173,5 @@ pub fn search_relate
     let cursor = collection.aggregate(pipelines, None)?;
 
     let documents: Vec<_> = cursor.map(|doc| doc.unwrap()).collect();
-    Ok(documents)
+    Ok(documents[0].clone())
 }
