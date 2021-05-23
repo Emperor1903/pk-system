@@ -107,7 +107,7 @@ pub fn check_role
 {
     match id.identity() {
         Some(identity) => {
-            let role_in_id = &identity.to_string()[..3];
+            let role_in_id = &identity.to_string()[..2];
             let role_in_id: u8 = role_in_id.parse::<u8>().unwrap();
             role_in_id == role
         }
