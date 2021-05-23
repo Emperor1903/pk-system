@@ -35,11 +35,12 @@ pub fn search
 }
 
 pub fn update
-    <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (data: &T)
-     -> Result<T, mongodb::error::Error>
+    <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone,
+     U: Clone>
+    (id: U, data: &T)
+     -> Result<U, mongodb::error::Error> where Bson: From<U>
 {
-    query::update(data)
+    query::update::<T, U>(id, data)
 }
 
 pub fn delete

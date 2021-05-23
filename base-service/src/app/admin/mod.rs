@@ -7,7 +7,7 @@ use actix_identity::Identity;
 
 use crate::db;
 use crate::app::auth;
-use crate::api::form::{SearchQuery,RelateSearchQuery};
+use crate::api::form::{SearchQuery, RelateSearchQuery, UpdateForm};
 
 pub fn create
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
@@ -33,10 +33,10 @@ pub fn search
 
 pub fn update
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (id: &Identity, data: &T) -> Option<Result<T, mongodb::error::Error>>    
+    (id: &Identity, data: &UpdateForm<T, ObjectId>) -> Option<Result<ObjectId, mongodb::error::Error>>    
 {
     if auth::check_role(id, 0) {
-        Some(db::update::<T>(data))
+        Some(db::update::<T, ObjectId>(data.id.clone(), &data.data))
     } else {
         None
     }

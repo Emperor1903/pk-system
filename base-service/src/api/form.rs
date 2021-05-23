@@ -29,3 +29,10 @@ pub struct RelateSearchQuery {
     pub start_time: Option<u64>,
     pub end_time: Option<u64>
 }
+
+
+#[derive(Deserialize)]
+pub struct UpdateForm<T, U> {
+    pub id: U,
+    pub data: T
+}

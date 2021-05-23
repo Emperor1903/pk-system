@@ -6,7 +6,7 @@ use actix_web::{web, HttpResponse};
 use mongodb::bson::oid::ObjectId;
 use actix_identity::Identity;
 
-use crate::api::{do_response, form::{SearchQuery,RelateSearchQuery}};
+use crate::api::{do_response, form::{SearchQuery, RelateSearchQuery, UpdateForm}};
 use crate::app::admin;
 
 pub async fn create
@@ -26,9 +26,9 @@ pub async fn search
 
 pub async fn update
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (item: web::Json<T>, id: Identity) -> HttpResponse
+    (item: web::Json<UpdateForm<T, ObjectId>>, id: Identity) -> HttpResponse
 {
-    let data: T = item.into_inner();
+    let data: UpdateForm<T, ObjectId> = item.into_inner();
     do_response(admin::update::<T>(&id, &data).unwrap()).await
 }
 

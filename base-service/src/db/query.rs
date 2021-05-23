@@ -49,13 +49,13 @@ pub fn search
         page_v.push(stage);
     }
     if let Some(mut v) = limit {
-        if v > 20 {
-            v = 20;
+        if v > 1000 {
+            v = 1000;
         }
         let stage = doc! {"$limit": v};
         page_v.push(stage);
     } else {
-        let stage = doc! {"$limit": 10};
+        let stage = doc! {"$limit": 1000};
         page_v.push(stage);
     }
     
@@ -75,19 +75,21 @@ pub fn search
     Ok(documents[0].clone())
 }
 
+fn magic_update(document: &mongodb::bson::Document) ->  mongodb::bson::Document {
+    doc!{"$set": document}
+}
+
 pub fn update
-    <T: Clone + Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
-    (obj: &T)
-     ->  Result<T, mongodb::error::Error>
+    <T: Clone + Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send,
+     U: Clone>
+    (id: U, obj: &T)
+     ->  Result<U, mongodb::error::Error> where Bson: From<U>
 {
     let collection = get_collection::<T>();
     let serialized_data = bson::to_bson(&obj)?;
     let document = serialized_data.as_document().unwrap();
-    let update_doc = doc! {
-        "$set": document
-    };
-    collection.update_one((*document).clone(), update_doc, None)?;
-    Ok((*obj).clone())
+    collection.update_one(doc!{"_id": id.clone()}, magic_update(document), None)?;
+    Ok(id)
 }
 
 pub fn delete
