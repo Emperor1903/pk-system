@@ -4,7 +4,7 @@ use std::fmt::Debug;
 use crate::api::form::{SearchQuery, RelateSearchQuery};
 use mongodb::sync::{Client, Database};
 use lazy_static::lazy_static;
-use mongodb::bson::{oid::ObjectId, Bson};
+use mongodb::bson::Bson;
 
 use crate::config::Config;
 

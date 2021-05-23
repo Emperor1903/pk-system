@@ -1,58 +1,35 @@
 use actix_web::{web, HttpResponse};
 use actix_identity::Identity;
-use sha2::{Sha256, Digest};
 
-
-use crate::db;
-use crate::models::User;
-use crate::api::do_auth_response;
+use crate::api::do_response;
 use crate::api::form::UserForm;
+use crate::app::auth;
 
-
-
-fn hash_password(password: &String) -> String {
-    let mut hasher = Sha256::new();
-    hasher.update(password);
-    format!("{:X}", hasher.finalize())
-}
-
-
-pub async fn create_user
-    (form: web::Form<UserForm>, id: Identity) -> HttpResponse
+pub async fn
+    create_admin_user(id: Identity, user: web::Form<UserForm>) -> HttpResponse
 {
-
-    let user = User {
-        username: form.username.clone(),
-        password_hash: hash_password(&form.password),
-    };
-            
-    do_auth_response(db::create::<User>(&user), id).await
+    do_response(auth::create_admin_user(&id, &user).unwrap()).await
 }
 
+pub async fn
+    create_staff_user(id: Identity, user: web::Form<UserForm>) -> HttpResponse
+{
+    do_response(auth::create_staff_user(&id, &user).unwrap()).await
+}
 
 pub async fn login
-    (form: web::Form<UserForm>, id: Identity) -> HttpResponse
+    (id: Identity, form: web::Form<UserForm>) -> HttpResponse
 {
     let data = form.into_inner();
-    match db::get::<User, String>(data.username) {
-        Ok(user) => {
-            if hash_password(&data.password) == user.password_hash {
-                id.remember(user.username);
-                HttpResponse::Ok().body("succeed to login")
-            } else {
-                HttpResponse::Ok().body("failed to login")                
-            }
-        }
-        Err(_) => {
-            HttpResponse::Ok().body("failed to login")
-        }
+    match auth::login(&data, &id) {
+        Some(_) => HttpResponse::Ok().body("succeed to login"),
+        None => HttpResponse::BadRequest().body("failed to login")
     }
 }
-
 
 pub async fn logout
     (id: Identity) -> HttpResponse
 {
-    id.forget();
+    auth::logout(&id);
     HttpResponse::Ok().body("Ok")
 }

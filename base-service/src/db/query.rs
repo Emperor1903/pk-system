@@ -4,7 +4,6 @@ use core::fmt::Debug;
 use mongodb::bson;
 use mongodb::bson::{doc, Bson, oid::ObjectId};
 
-use crate::api::form::{SearchQuery, RelateSearchQuery};
 use crate::utils::get_struct_name;
 use super::DB;
 
@@ -102,7 +101,8 @@ pub fn get
 
 pub fn search_relate
     <T: Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
-    (ids: Vec<ObjectId>, fields: Vec<String>, skip: Option<u64>, limit: Option<i64>, start_time: Option<u64>, end_time: Option<u64>)
+    (ids: Vec<ObjectId>, fields: Vec<String>, skip: Option<u64>,
+     limit: Option<i64>, start_time: Option<u64>, end_time: Option<u64>)
      -> Result<Vec<bson::Document>, mongodb::error::Error>
 {
     let collection = get_collection::<T>();

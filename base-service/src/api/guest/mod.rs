@@ -31,3 +31,10 @@ pub async fn relate
     let query = item.into_inner();
     do_response(db::search_relate::<T>(query)).await
 }
+
+pub async fn new_booking_ticket
+    (item: web::Json<BookingTicket>) -> HttpResponse
+{
+    let data = item.into_inner();
+    do_response(db::create::<BookingTicket>(&data)).await    
+}
