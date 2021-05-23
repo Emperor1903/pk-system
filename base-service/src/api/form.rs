@@ -9,7 +9,7 @@ pub struct SearchQuery {
     pub limit: Option<i64>
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct UserForm {
     pub username: String,
     pub password: String

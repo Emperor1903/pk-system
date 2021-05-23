@@ -28,10 +28,10 @@ pub fn search
     (keyword: Option<String>,
      start: Option<u64>,
      limit: Option<i64>)
-     -> Result<Vec<T>, mongodb::error::Error>
+     -> Result<Vec<bson::Document>, mongodb::error::Error>
 {
     let collection = get_collection::<T>();
-    let mut pipelines = Vec::new();
+    let mut ipipelines = Vec::new();
     if let Some(v) = keyword {
         let stage = doc! {
             "$match": {
@@ -40,25 +40,36 @@ pub fn search
                 }                
             }
         };
-        pipelines.push(stage);
+        ipipelines.push(stage);
     }
     if let Some(v) = start {
         let stage = doc! {"$skip": v};
-        pipelines.push(stage);
+        ipipelines.push(stage);
     }
     if let Some(mut v) = limit {
         if v > 20 {
             v = 20;
         }
         let stage = doc! {"$limit": v};
-        pipelines.push(stage);
+        ipipelines.push(stage);
     } else {
         let stage = doc! {"$limit": 10};
-        pipelines.push(stage);
+        ipipelines.push(stage);
     }
+    
+    let facet = doc! {
+        "$facet": {
+            "total": [{"$count": "count"}],
+            "data": ipipelines
+        }
+    };
+
+    let mut pipelines = Vec::new();
+    pipelines.push(facet);
+    
     let cursor = collection.aggregate(pipelines, None)?;
-    let bson_to_t = |d| bson::from_bson(Bson::Document(d)).unwrap();
-    let documents: Vec<_> = cursor.map(|doc| bson_to_t(doc.unwrap())).collect();
+    
+    let documents: Vec<_> = cursor.map(|doc| doc.unwrap()).collect();
 
     Ok(documents)
 }
@@ -106,9 +117,9 @@ pub fn search_relate
      -> Result<Vec<bson::Document>, mongodb::error::Error>
 {
     let collection = get_collection::<T>();
-    let mut pipelines = Vec::new();
+    let mut ipipelines = Vec::new();
     for i in 0..ids.len() {
-        pipelines.push(doc!{
+        ipipelines.push(doc!{
             "$match": {
                 fields[i].clone(): ids[i].clone()
             }
@@ -117,21 +128,21 @@ pub fn search_relate
 
     if let Some(v) = skip { 
         let stage = doc! {"$skip": v};
-        pipelines.push(stage);
+        ipipelines.push(stage);
     }
     if let Some(mut v) = limit {
         if v > 1000 {
             v = 1000;
         }
         let stage = doc! {"$limit": v};
-        pipelines.push(stage);
+        ipipelines.push(stage);
     } else {
         let stage = doc! {"$limit": 1000};
-        pipelines.push(stage);
+        ipipelines.push(stage);
     }
 
     if let Some(v) = start_time {
-        pipelines.push(doc!{
+        ipipelines.push(doc!{
             "$match": {
                 "start_time": {
                     "$gte": v
@@ -141,7 +152,7 @@ pub fn search_relate
     }
 
     if let Some(v) = end_time {
-        pipelines.push(doc!{
+        ipipelines.push(doc!{
             "$match": {
                 "end_time": {
                     "$lte": v
@@ -149,8 +160,16 @@ pub fn search_relate
             }
         });
     }
-
     
+    let facet = doc! {
+        "$facet": {
+            "total": [{"$count": "count"}],
+            "data": ipipelines
+        }
+    };
+
+    let mut pipelines = Vec::new();
+    pipelines.push(facet);
     
     let cursor = collection.aggregate(pipelines, None)?;
 

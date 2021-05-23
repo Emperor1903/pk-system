@@ -21,6 +21,7 @@ pub async fn login
     (id: Identity, form: web::Form<UserForm>) -> HttpResponse
 {
     let data = form.into_inner();
+    println!("{:?}", data);
     match auth::login(&data, &id) {
         Some(_) => HttpResponse::Ok().body("succeed to login"),
         None => HttpResponse::BadRequest().body("failed to login")

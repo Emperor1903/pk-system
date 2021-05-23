@@ -29,9 +29,9 @@ pub fn create
 
 pub fn search
     <T:'static + Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (query: SearchQuery) -> Result<Vec<T>, mongodb::error::Error>
+    (query: SearchQuery) -> Result<Vec<mongodb::bson::Document>, mongodb::error::Error>
 {
-    query::search(query.keyword, query.start, query.limit)
+    query::search::<T>(query.keyword, query.start, query.limit)
 }
 
 pub fn update
