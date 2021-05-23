@@ -22,7 +22,7 @@ pub fn create
 
 pub fn search
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (id: &Identity, query: SearchQuery) -> Option<Result<Vec<T>, mongodb::error::Error>>
+    (id: &Identity, query: SearchQuery) -> Option<Result<Vec<mongodb::bson::Document>, mongodb::error::Error>>
 {
     if auth::check_role(id, 0) {
         Some(db::search::<T>(query))
