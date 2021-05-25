@@ -19,13 +19,16 @@ const PRIVATE_KEY: [u8; 32] = [4, 141, 82, 28, 211, 109, 76, 44, 193, 135, 179, 
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
     dotenv::from_filename(".env").ok();
+    
     let config = Config::from_env().unwrap();
+    
     let host_url = format!("{}:{}", config.server.host, config.server.port);
-
     
     println!("Starting server at http://{}", host_url);
 
-    HttpServer::new(|| {
+    let domain: String = config.server.domain;
+    
+    HttpServer::new(move || {
         App::new()
             .wrap(
                 Cors::permissive()
@@ -34,7 +37,7 @@ async fn main() -> std::io::Result<()> {
                 IdentityService::new(
                     CookieIdentityPolicy::new(&PRIVATE_KEY)
                         .name("session-token")
-                        .domain("localhost")
+                        .domain(domain.as_str())
                         .secure(true)
                         .same_site(cookie::SameSite::None)
                         .http_only(true),
