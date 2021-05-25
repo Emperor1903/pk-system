@@ -6,7 +6,7 @@ mod utils;
 mod app;
 
 use actix_identity::{CookieIdentityPolicy, IdentityService};
-use actix_web::{web, App, HttpServer, middleware};
+use actix_web::{web, App, HttpServer, middleware, cookie};
 use actix_cors::Cors;
 use dotenv;
 use models::*;
@@ -34,7 +34,10 @@ async fn main() -> std::io::Result<()> {
                 IdentityService::new(
                     CookieIdentityPolicy::new(&PRIVATE_KEY)
                         .name("session-token")
-                        .secure(false),
+                        .domain("localhost")
+                        .secure(true)
+                        .same_site(cookie::SameSite::None)
+                        .http_only(true),
                 ))
             .wrap(middleware::Logger::default())
             .data(web::JsonConfig::default().limit(4096))
