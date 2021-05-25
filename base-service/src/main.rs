@@ -38,9 +38,9 @@ async fn main() -> std::io::Result<()> {
                     CookieIdentityPolicy::new(&PRIVATE_KEY)
                         .name("session-token")
                         .domain(domain.as_str())
-                        .secure(false)
                         .same_site(cookie::SameSite::None)
-                        .http_only(true),
+                        .http_only(true)
+                        .secure(true),
                 ))
             .wrap(middleware::Logger::default())
             .data(web::JsonConfig::default().limit(4096))
