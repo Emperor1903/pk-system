@@ -40,7 +40,7 @@ async fn main() -> std::io::Result<()> {
                         .domain(domain.as_str())
                         .same_site(cookie::SameSite::None)
                         .http_only(true)
-                        .secure(true),
+                        .secure(false),
                 ))
             .wrap(middleware::Logger::default())
             .data(web::JsonConfig::default().limit(4096))
