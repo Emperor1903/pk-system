@@ -19,8 +19,8 @@ pub struct Doctor {
     pub clinic: ObjectId,
     #[serde(skip_serializing_if = "Option::is_none")]    
     pub hospital: Option<ObjectId>,
-    pub specialization: ObjectId,
-    pub position: String,
+    pub specializations: Vec<ObjectId>,
+    pub positions: Vec<String>,
     pub experiences: Vec<String>,
     pub awards: Vec<String>,
     pub educations: Vec<String>,
@@ -44,7 +44,7 @@ pub struct Clinic {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Hospital {
-    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]        
+ghel    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]        
     pub id: Option<ObjectId>,    
     pub name: String,
     pub desc: String,

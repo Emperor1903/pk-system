@@ -7,6 +7,7 @@ mod app;
 
 use actix_identity::{CookieIdentityPolicy, IdentityService};
 use actix_web::{web, App, HttpServer, middleware, cookie};
+use openssl::ssl::{SslAcceptor, SslAcceptorBuilder, SslFiletype, SslMethod};
 use actix_cors::Cors;
 use dotenv;
 use models::*;
@@ -15,19 +16,31 @@ use crate::config::Config;
 
 const PRIVATE_KEY: [u8; 32] = [4, 141, 82, 28, 211, 109, 76, 44, 193, 135, 179, 33, 9, 225, 7, 244, 110, 230, 70, 170, 153, 2, 152, 155, 154, 69, 126, 55, 39, 197, 237, 225];
 
+fn load_ssl() -> SslAcceptorBuilder {
+    let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
+    builder
+        .set_private_key_file("key.pem", SslFiletype::PEM)
+        .unwrap();
+    builder.set_certificate_chain_file("cert.pem").unwrap();
+
+    builder
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
+    std::env::set_var("RUST_LOG", "actix_web=debug");
+    env_logger::init();
+        
     dotenv::from_filename(".env").ok();
     
     let config = Config::from_env().unwrap();
     
     let host_url = format!("{}:{}", config.server.host, config.server.port);
     
-    println!("Starting server at http://{}", host_url);
+    println!("Starting server at https://{}", host_url);
 
     let domain: String = config.server.domain;
-    
+
     HttpServer::new(move || {
         App::new()
             .wrap(
@@ -123,10 +136,7 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("api/book/_get").route(web::post().to(api::guest::get::<BookingTicket>)))
             .service(web::resource("api/book/_search").route(web::post().to(api::guest::search::<BookingTicket>)))
             .service(web::resource("api/book/_relate").route(web::post().to(api::guest::relate::<BookingTicket>)))
-            
-
-            
-    }).bind(host_url)?
+    }).bind_openssl(host_url, load_ssl())?
         .run()
         .await
 }
