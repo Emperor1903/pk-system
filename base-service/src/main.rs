@@ -52,8 +52,8 @@ async fn main() -> std::io::Result<()> {
                         .name("session-token")
                         .domain(domain.as_str())
                         .same_site(cookie::SameSite::None)
-                        .http_only(true)
-                        .secure(false),
+                        .http_only(false)
+                        .secure(true),
                 ))
             .wrap(middleware::Logger::default())
             .data(web::JsonConfig::default().limit(4096))
