@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Hospital/>
+    <Hospital />
   </div>
 </template>
 
@@ -10,7 +10,7 @@ import Hospital from "./views/Hospital.vue";
 export default {
   name: "app",
   components: {
-    Hospital
+    Hospital,
   },
 };
 </script>

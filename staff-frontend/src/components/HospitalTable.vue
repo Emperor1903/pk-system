@@ -1,4 +1,5 @@
 <template>
+<div>
   <el-card shadow="hover">
     <el-table :data="tableData" style="width: 100%">
       <el-table-column fixed label="STT" prop="index" width="50">
@@ -49,6 +50,9 @@
     >
     </el-pagination>
   </el-card>
+
+  <DeleteDialog :state="deleteState" />
+</div>
 </template>
 
 <script>
@@ -62,7 +66,15 @@ export default {
       tableData: [],
       search: "",
       total: 0,
+      deleteState: {
+        title: "Bệnh viện",
+        data: {},
+        visible: true
+      },
     };
+  },
+  components: {
+    DeleteDialog: () => import("./DeleteDialog.vue"),
   },
   async mounted() {
     await this.getData(1);
@@ -70,7 +82,6 @@ export default {
   methods: {
     async getData(page) {
       let start = (page - 1) * TABLE_LIMIT;
-      console.log(this.search);
       let data = await searchHospital(this.search, start);
       this.total = data.total;
       for (let i = 0; i < Math.min(TABLE_LIMIT, this.total - start); ++i) {
