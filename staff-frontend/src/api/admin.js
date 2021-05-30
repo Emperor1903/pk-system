@@ -21,15 +21,20 @@ newDocument(name, body) {
 }
 
 async function
-searchDocument(name, keyword, start, limit) {
+searchDocument(name, keyword, fields, ids, start, limit) {
     try {
         var url = new URL(`${API_URL}/admin/${name}/_search`);
         const options = {
             method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                keyword: keyword,
+                ids: ids,
+                fields: fields,
+                start: start,
+                limit: limit
+            }),
         };
-        if (keyword) url.searchParams.append("keyword", keyword);
-        if (start) url.searchParams.append("start", start);
-        if (limit) url.searchParams.append("limit", limit);
         var response = await fetch(url, options);
         var data = await response.json();
         data = {
@@ -155,25 +160,32 @@ newProvince(name) {
 
 export async function
 searchHospital(keyword, start, limit = TABLE_LIMIT) {
-    var data = await searchDocument("hospital", keyword, start, limit);
+    var data = await searchDocument("hospital", keyword, null, null, start, limit);
     return data;
 }
 
 export async function
-searchClinic(keyword, start, limit = TABLE_LIMIT) {
-    var data = await searchDocument("clinic", keyword, start, limit);
+searchClinic(keyword, hospital, start, limit = TABLE_LIMIT) {
+    var data = await searchDocument("clinic",
+                                    keyword,
+                                    ['hospital'],
+                                    [{
+                                        "$oid": hospital
+                                    }],
+                                    start,
+                                    limit);
     return data;
 }
 
 export async function
 searchSpecialization(keyword, start, limit = TABLE_LIMIT){
-    let data = await searchDocument("specialization", keyword, start, limit);
+    let data = await searchDocument("specialization", keyword, null, null, start, limit);
     return data;
 }
 
 export async function
 searchProvince() {
-    var data = await searchDocument("province", null, 0, 1000);
+    var data = await searchDocument("province", null, null, null, 0, 1000);
     return data;
 }
 

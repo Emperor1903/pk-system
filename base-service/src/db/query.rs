@@ -66,10 +66,10 @@ pub fn search
     (keyword: Option<String>,
      ids: Option<Vec<ObjectId>>,
      fields: Option<Vec<String>>,
-     skip: Option<u64>,
+     skip: Option<i64>,
      limit: Option<i64>,
-     start_time: Option<u64>,
-     end_time: Option<u64>)
+     start_time: Option<i64>,
+     end_time: Option<i64>)
      -> Result<bson::Document, mongodb::error::Error>
 {
     let collection = get_collection::<T>();

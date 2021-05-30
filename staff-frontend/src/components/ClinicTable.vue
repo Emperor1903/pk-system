@@ -109,7 +109,7 @@ export default {
     methods: {
         async getData(page) {
             var start = (page - 1) * TABLE_LIMIT;
-            var data = await searchClinic(this.search, start);
+            var data = await searchClinic(this.search, this.id, start);
             this.tableData = [];            
             if (data) {
                 this.total = data.total;

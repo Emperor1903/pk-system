@@ -43,7 +43,6 @@ pub struct Clinic {
     pub address: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hospital: Option<ObjectId>,
-    pub specializations: Vec<ObjectId>,
     pub time_desc: String,
     pub phone_num: String,
     #[serde(skip_serializing_if = "Option::is_none")]
