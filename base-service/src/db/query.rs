@@ -23,58 +23,6 @@ pub fn create
     Ok(rs.inserted_id)
 }
 
-pub fn search
-    <T: Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
-    (keyword: Option<String>,
-     start: Option<u64>,
-     limit: Option<i64>)
-     -> Result<bson::Document, mongodb::error::Error>
-{
-    let collection = get_collection::<T>();
-    let mut pipelines = Vec::new();
-    if let Some(v) = keyword {
-        let stage = doc! {
-            "$match": {
-                "$text": {
-                    "$search": v
-                }                
-            }
-        };
-        pipelines.push(stage);
-    }
-
-    let mut page_v = Vec::new();
-    if let Some(v) = start {
-        let stage = doc! {"$skip": v};
-        page_v.push(stage);
-    }
-    if let Some(mut v) = limit {
-        if v > 1000 {
-            v = 1000;
-        }
-        let stage = doc! {"$limit": v};
-        page_v.push(stage);
-    } else {
-        let stage = doc! {"$limit": 1000};
-        page_v.push(stage);
-    }
-    
-    let facet = doc! {
-        "$facet": {
-            "total": [{"$count": "count"}],
-            "data": page_v
-        }
-    };
-
-    pipelines.push(facet);
-    
-    let cursor = collection.aggregate(pipelines, None)?;
-    
-    let documents: Vec<_> = cursor.map(|doc| doc.unwrap()).collect();
-
-    Ok(documents[0].clone())
-}
-
 fn magic_update(document: &mongodb::bson::Document) ->  mongodb::bson::Document {
     doc!{"$set": document}
 }
@@ -113,21 +61,30 @@ pub fn get
     Ok(bson::from_bson(Bson::Document(rs.unwrap())).unwrap())
 }
 
-pub fn search_relate
+pub fn search
     <T: Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
-    (ids: Vec<ObjectId>, fields: Vec<String>, skip: Option<u64>,
-     limit: Option<i64>, start_time: Option<u64>, end_time: Option<u64>)
+    (keyword: Option<String>,
+     ids: Option<Vec<ObjectId>>,
+     fields: Option<Vec<String>>,
+     skip: Option<u64>,
+     limit: Option<i64>,
+     start_time: Option<u64>,
+     end_time: Option<u64>)
      -> Result<bson::Document, mongodb::error::Error>
 {
     let collection = get_collection::<T>();
     let mut pipelines = Vec::new();
-    for i in 0..ids.len() {
-        pipelines.push(doc!{
-            "$match": {
-                fields[i].clone(): ids[i].clone()
+    if let Some(v) = ids {
+        if let Some(u) = fields {
+            for i in 0..v.len() {
+                pipelines.push(doc!{
+                    "$match": {
+                        u[i].clone(): v[i].clone()
+                    }
+                });
             }
-        });
-    }
+        }
+    }    
     if let Some(v) = start_time {
         pipelines.push(doc!{
             "$match": {
@@ -137,7 +94,6 @@ pub fn search_relate
             }
         });
     }
-
     if let Some(v) = end_time {
         pipelines.push(doc!{
             "$match": {
@@ -146,6 +102,16 @@ pub fn search_relate
                 }
             }
         });
+    }
+    if let Some(v) = keyword {
+        let stage = doc! {
+            "$match": {
+                "$text": {
+                    "$search": v
+                }                
+            }
+        };
+        pipelines.push(stage);
     }
     let mut page_v = Vec::new();
     if let Some(v) = skip { 

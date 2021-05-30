@@ -4,9 +4,9 @@
   <el-table :data="tableData" style="width: 100%">
     <el-table-column fixed label="STT" prop="index" width="50">
     </el-table-column>
-    <el-table-column fixed label="Bệnh viện" prop="name" width="300">
+    <el-table-column fixed label="Phòng khám" prop="name" width="450">
     </el-table-column>
-    <el-table-column label="Số điện thoại" prop="phone_num" width="300">
+    <el-table-column label="Số điện thoại" prop="phone_num" width="250">
     </el-table-column>
     <el-table-column label="Địa chỉ" prop="address">
     </el-table-column>
@@ -20,7 +20,7 @@
         <el-input
           v-model="search"
           size="mini"
-          placeholder="Tìm kiếm bệnh viện"
+          placeholder="Tìm kiếm phòng khám"
           @change="handleSearch"/>
       </template>
       <template slot-scope="scope">
@@ -55,22 +55,23 @@
   
   
   <DeleteDialog :state="deleteState" @confirm="updateData"/>
-  <NewHospitalDialog :state="newState" @confirm="updateData"/>
-  <UpdateHospitalDialog :state="updateState" @confirm="updateData"/>    
+  <NewClinicDialog :state="newState" @confirm="updateData"/>
+  <UpdateClinicDialog :state="updateState" @confirm="updateData"/>    
 </div>
 
 </template>
 
 <script>
 import { TABLE_LIMIT } from "../api/config";
-import { searchHospital, searchProvince } from "../api/admin";
+import { searchClinic, searchProvince } from "../api/admin";
 
 export default {
-    name: "HospitalTable",
+    name: "ClinicTable",
+    props: ["id"],
     components: {
         DeleteDialog: () => import("./DeleteDialog.vue"),
-        NewHospitalDialog: () => import("./NewHospitalDialog.vue"),
-        UpdateHospitalDialog: () => import("./UpdateHospitalDialog.vue"),
+        NewClinicDialog: () => import("./NewClinicDialog.vue"),
+        UpdateClinicDialog: () => import("./UpdateClinicDialog.vue"),
     },
     data() {
         return {
@@ -78,22 +79,22 @@ export default {
             search: "",
             total: 0,
             deleteState: {
-                title: "Bệnh viện",
-                doc: "hospital",
+                title: "Phòng khám",
+                doc: "clinic",
                 data: {},
                 visible: false,
                 confirmed: false,
             },
             newState: {
-                title: "Bệnh viện",
-                doc: "hospital",
+                title: "Phòng khám",
+                doc: "clinic",
                 visible: false,
                 confirmed: false,
                 provinces: []
             },
             updateState: {
-                title: "Bệnh viện",
-                doc: "hospital",
+                title: "Phòng khám",
+                doc: "clinic",
                 data: {},
                 visible: false,
                 confirmed: false,
@@ -108,17 +109,19 @@ export default {
     methods: {
         async getData(page) {
             var start = (page - 1) * TABLE_LIMIT;
-            var data = await searchHospital(this.search, start);
+            var data = await searchClinic(this.search, start);
             this.tableData = [];            
             if (data) {
                 this.total = data.total;
                 for (let i = 0; i < Math.min(TABLE_LIMIT, this.total - start); ++i) {
                     data.data[i].index = i + 1 + start;
-                    data.data[i].images = data.data[i].images.map(i => {
-                        return {
-                            name: i.split("/")[i.split("/").length - 1],
-                            url: i
-                    }});
+                    if (data.data[i].images) {
+                        data.data[i].images = data.data[i].images.map(i => {
+                            return {
+                                name: i.split("/")[i.split("/").length - 1],
+                                url: i
+                            }});
+                    }
                 }
                 this.tableData = data.data;
             }
@@ -132,8 +135,8 @@ export default {
         },
         handleEdit(index, row) {
             this.updateState = {
-                title: "Bệnh viện",
-                doc: "hospital",
+                title: "Phòng khám",
+                doc: "clinic",
                 data: row,
                 visible: true,
                 confirmed: false,

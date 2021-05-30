@@ -63,42 +63,36 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("admin/_new_staff").route(web::post().to(api::auth::create_staff_user)))                        
         // Doctor
             .service(web::resource("admin/doctor/_get").route(web::post().to(api::admin::get::<Doctor>)))
-            .service(web::resource("admin/doctor/_relate").route(web::post().to(api::admin::relate::<Doctor>)))
             .service(web::resource("admin/doctor/_search").route(web::post().to(api::admin::search::<Doctor>)))            
             .service(web::resource("admin/doctor/_new").route(web::post().to(api::admin::create::<Doctor>)))
             .service(web::resource("admin/doctor/_update").route(web::post().to(api::admin::update::<Doctor>)))
             .service(web::resource("admin/doctor/_delete").route(web::post().to(api::admin::delete::<Doctor>)))
         // Hospital
             .service(web::resource("admin/hospital/_get").route(web::post().to(api::admin::get::<Hospital>)))
-            .service(web::resource("admin/hospital/_relate").route(web::post().to(api::admin::relate::<Hospital>)))
             .service(web::resource("admin/hospital/_search").route(web::post().to(api::admin::search::<Hospital>)))            
             .service(web::resource("admin/hospital/_new").route(web::post().to(api::admin::create::<Hospital>)))
             .service(web::resource("admin/hospital/_update").route(web::post().to(api::admin::update::<Hospital>)))
             .service(web::resource("admin/hospital/_delete").route(web::post().to(api::admin::delete::<Hospital>)))
         // Specialization
             .service(web::resource("admin/specialization/_get").route(web::post().to(api::admin::get::<Specialization>)))
-            .service(web::resource("admin/specialization/_relate").route(web::post().to(api::admin::relate::<Specialization>)))
             .service(web::resource("admin/specialization/_search").route(web::post().to(api::admin::search::<Specialization>)))
             .service(web::resource("admin/specialization/_new").route(web::post().to(api::admin::create::<Specialization>)))
             .service(web::resource("admin/specialization/_update").route(web::post().to(api::admin::update::<Specialization>)))
             .service(web::resource("admin/specialization/_delete").route(web::post().to(api::admin::delete::<Specialization>)))
         // Clinic
             .service(web::resource("admin/clinic/_get").route(web::post().to(api::admin::get::<Clinic>)))
-            .service(web::resource("admin/clinic/_relate").route(web::post().to(api::admin::relate::<Clinic>)))
             .service(web::resource("admin/clinic/_search").route(web::post().to(api::admin::search::<Clinic>)))            
             .service(web::resource("admin/clinic/_new").route(web::post().to(api::admin::create::<Clinic>)))
             .service(web::resource("admin/clinic/_update").route(web::post().to(api::admin::update::<Clinic>)))
             .service(web::resource("admin/clinic/_delete").route(web::post().to(api::admin::delete::<Clinic>)))
         // Province
             .service(web::resource("admin/province/_get").route(web::post().to(api::admin::get::<Province>)))
-            .service(web::resource("admin/province/_relate").route(web::post().to(api::admin::relate::<Province>)))
             .service(web::resource("admin/province/_search").route(web::post().to(api::admin::search::<Province>)))            
             .service(web::resource("admin/province/_new").route(web::post().to(api::admin::create::<Province>)))
             .service(web::resource("admin/province/_update").route(web::post().to(api::admin::update::<Province>)))
             .service(web::resource("admin/province/_delete").route(web::post().to(api::admin::delete::<Province>)))
         // Shift
             .service(web::resource("admin/shift/_get").route(web::post().to(api::admin::get::<Shift>)))
-            .service(web::resource("admin/shift/_relate").route(web::post().to(api::admin::relate::<Shift>)))
             .service(web::resource("admin/shift/_search").route(web::post().to(api::admin::search::<Shift>)))            
             .service(web::resource("admin/shift/_new").route(web::post().to(api::admin::create::<Shift>)))
             .service(web::resource("admin/shift/_update").route(web::post().to(api::admin::update::<Shift>)))
@@ -110,32 +104,25 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("api/auth/_logout").route(web::post().to(api::auth::logout)))
         // Doctor
             .service(web::resource("api/doctor/_get").route(web::post().to(api::guest::get::<Doctor>)))
-            .service(web::resource("api/doctor/_relate").route(web::post().to(api::guest::relate::<Doctor>)))
         // Specialization
             .service(web::resource("api/specialization/_get").route(web::post().to(api::guest::get::<Specialization>)))
             .service(web::resource("api/specialization/_search").route(web::post().to(api::guest::search::<Specialization>)))
-            .service(web::resource("api/specialization/_relate").route(web::post().to(api::guest::relate::<Specialization>)))
         // Clinic
             .service(web::resource("api/clinic/_get").route(web::post().to(api::guest::get::<Clinic>)))
             .service(web::resource("api/clinic/_search").route(web::post().to(api::guest::search::<Clinic>)))
-            .service(web::resource("api/clinic/_relate").route(web::post().to(api::guest::relate::<Clinic>)))            
         // Hospital
             .service(web::resource("api/hospital/_get").route(web::post().to(api::guest::get::<Hospital>)))                        
             .service(web::resource("api/hospital/_search").route(web::post().to(api::guest::search::<Hospital>)))            
-            .service(web::resource("api/hospital/_relate").route(web::post().to(api::guest::relate::<Hospital>)))
         // Province
             .service(web::resource("api/province/_get").route(web::post().to(api::guest::get::<Province>)))            
             .service(web::resource("api/province/_search").route(web::post().to(api::guest::search::<Province>)))
-            .service(web::resource("api/province/_relate").route(web::post().to(api::guest::relate::<Province>)))
         // Shift
             .service(web::resource("api/shift/_get").route(web::post().to(api::guest::get::<Shift>)))
             .service(web::resource("api/shift/_search").route(web::post().to(api::guest::search::<Shift>)))
-            .service(web::resource("api/shift/_relate").route(web::post().to(api::guest::relate::<Shift>)))
         // BookingTicket
             .service(web::resource("api/book/_new").route(web::post().to(api::guest::new_booking_ticket)))            
             .service(web::resource("api/book/_get").route(web::post().to(api::guest::get::<BookingTicket>)))
             .service(web::resource("api/book/_search").route(web::post().to(api::guest::search::<BookingTicket>)))
-            .service(web::resource("api/book/_relate").route(web::post().to(api::guest::relate::<BookingTicket>)))
     }).bind_openssl(host_url, load_ssl())?
         .run()
         .await

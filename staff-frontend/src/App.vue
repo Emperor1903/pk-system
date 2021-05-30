@@ -1,27 +1,20 @@
 <template>
   <div id="app">
-    <Hospital />
+    <el-row>
+      <el-col :span="4"><Navbar></Navbar></el-col>
+      <el-col :span="20"><router-view /></el-col>
+    </el-row>
   </div>
 </template>
 
-<script>
-import Hospital from "./views/Hospital.vue";
-
-export default {
-  name: "app",
-  components: {
-    Hospital,
-  },
-};
-</script>
-
 <style>
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+.app {
+    word-break: normal    
 }
 </style>
+
+<script>
+export default {
+  components: { Navbar: () => import("./components/Navbar") },
+};
+</script>

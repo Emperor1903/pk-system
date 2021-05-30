@@ -1,7 +1,7 @@
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::fmt::Debug;
-use crate::api::form::{SearchQuery, RelateSearchQuery};
+use crate::api::form::{SearchQuery};
 use mongodb::sync::{Client, Database};
 use lazy_static::lazy_static;
 use mongodb::bson::Bson;
@@ -27,12 +27,6 @@ pub fn create
     query::create(data)
 }
 
-pub fn search
-    <T:'static + Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (query: SearchQuery) -> Result<mongodb::bson::Document, mongodb::error::Error>
-{
-    query::search::<T>(query.keyword, query.start, query.limit)
-}
 
 pub fn update
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone,
@@ -60,11 +54,15 @@ pub fn get
     query::get::<T, U>(id)
 }
 
-pub fn search_relate
+pub fn search
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (query: RelateSearchQuery) -> Result<mongodb::bson::Document, mongodb::error::Error>
+    (query: SearchQuery) -> Result<mongodb::bson::Document, mongodb::error::Error>
 {
-    let ids = query.ids.unwrap();
-    let fields = query.fields.unwrap();
-    query::search_relate::<T>(ids, fields, query.start, query.limit, query.start_time, query.end_time)
+    query::search::<T>(query.keyword,
+                       query.ids,
+                       query.fields,
+                       query.start,
+                       query.limit,
+                       query.start_time,
+                       query.end_time)
 }

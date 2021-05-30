@@ -17,6 +17,7 @@ pub struct MongodbConfig {
 pub struct Config {
     pub server: ServerConfig,
     pub mongodb: MongodbConfig,
+    pub imgbb_api: String
 }
 
 impl Config {

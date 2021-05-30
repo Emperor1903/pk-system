@@ -6,7 +6,9 @@ pub struct Specialization {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<ObjectId>,
     pub name: String,
-    pub desc: String
+    pub desc: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub search_keyword: Option<String>,    
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -25,7 +27,11 @@ pub struct Doctor {
     pub awards: Vec<String>,
     pub educations: Vec<String>,
     pub email: String,
-    pub phone_num: String
+    pub phone_num: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub images: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub search_keyword: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -40,6 +46,10 @@ pub struct Clinic {
     pub specializations: Vec<ObjectId>,
     pub time_desc: String,
     pub phone_num: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub images: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub search_keyword: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -54,6 +64,10 @@ pub struct Hospital {
     //pub specializations: Vec<ObjectId>,
     //pub doctors: Vec<ObjectId>,
     pub phone_num: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub images: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub search_keyword: Option<String>,
 }
 
 
@@ -62,6 +76,8 @@ pub struct Province {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<ObjectId>,
     pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub search_keyword: Option<String>,    
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

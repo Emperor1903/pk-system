@@ -6,7 +6,7 @@ use actix_web::{web, HttpResponse};
 use mongodb::bson::oid::ObjectId;
 use actix_identity::Identity;
 
-use crate::api::{do_response, form::{SearchQuery, RelateSearchQuery, UpdateForm}};
+use crate::api::{do_response, form::{SearchQuery, UpdateForm}};
 use crate::app::admin;
 
 pub async fn create
@@ -46,12 +46,4 @@ pub async fn get
 {
     let data = item.into_inner();
     do_response(admin::get::<T>(&id, data).unwrap()).await
-}
-
-pub async fn relate
-    <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (item: web::Json<RelateSearchQuery>, id: Identity) -> HttpResponse
-{
-    let query = item.into_inner();
-    do_response(admin::relate::<T>(&id, query).unwrap()).await
 }
