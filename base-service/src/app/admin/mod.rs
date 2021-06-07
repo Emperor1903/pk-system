@@ -66,6 +66,31 @@ pub fn get
     }
 }
 
+pub fn search_admin
+    (id: &Identity,
+     query: SearchQuery)
+    -> Option<Result<bson::Document, mongodb::error::Error>>
+{
+    if auth::check_role(id, 0) {
+        Some(db::search_admin(SearchQuery))
+    } else {
+        Ok(None)
+    }
+}
+
+pub fn search_staff
+    (id: &Identity,
+     query: SearchQuery)
+    -> Option<Result<bson::Document, mongodb::error::Error>>
+{
+    if auth::check_role(id, 0) {
+        Some(db::search_staff(SearchQuery))
+    } else {
+        Ok(None)
+    }
+}
+    
+
 pub fn create_shifts
     (id: &Identity) -> Result<Option<i32>, mongodb::error::Error>
 {
@@ -91,7 +116,6 @@ pub fn create_shifts
         Ok(None)
     }
 }
-
 
 pub fn create_admin_user
     (id: &Identity, form: &UserForm)

@@ -79,20 +79,23 @@ pub fn get_all
     Ok(documents)
 }
     
-
-pub fn search
-    <T: Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
-    (keyword: Option<String>,
+pub to_pipelines
+    (pre_pipe: Option<Vec<Bson::Document>>,
+     keyword: Option<String>,
      ids: Option<Vec<ObjectId>>,
      fields: Option<Vec<String>>,
      skip: Option<i64>,
      limit: Option<i64>,
      start_time: Option<i64>,
      end_time: Option<i64>)
-     -> Result<bson::Document, mongodb::error::Error>
+     -> Vec<Bson::Document>
 {
-    let collection = get_collection::<T>();
     let mut pipelines = Vec::new();
+
+    for i in pre_pipe {
+        pipelines.push(i);
+    }
+    
     if let Some(v) = ids {
         if let Some(u) = fields {
             for i in 0..v.len() {
@@ -156,17 +159,77 @@ pub fn search
     };
 
     pipelines.push(facet);
-    
-    let cursor = collection.aggregate(pipelines, None)?;
+    pipelines
+}
 
+pub fn search
+    <T: Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
+    (keyword: Option<String>,
+     ids: Option<Vec<ObjectId>>,
+     fields: Option<Vec<String>>,
+     skip: Option<i64>,
+     limit: Option<i64>,
+     start_time: Option<i64>,
+     end_time: Option<i64>)
+     -> Result<bson::Document, mongodb::error::Error>
+{
+    let collection = get_collection::<T>();
+    let pipelines = to_pipelines(
+        None, ids, fields, skip, limit, start_time, end_time
+    );
+    let cursor = collection.aggregate(pipelines, None)?;
     let documents: Vec<_> = cursor.map(|doc| doc.unwrap()).collect();
     Ok(documents[0].clone())
 }
+
+pub fn search_admin
+    (keyword: Option<String>,
+     skip: Option<i64>,
+     limit: Option<i64>)
+     -> Result<bson::Document, mongodb::error::Error>
+{
+    let mut pipelines = Vec::new();
+
+    pipelines.push(doc!{
+        "match": {
+            "role": 0
+        }
+    });
+    pipelines = to_pipelines(
+        pipelines, None, None, skip, limit, None, None
+    );
+    let cursor = collection.aggregate(pipelines, None)?;
+    let documents: Vec<_> = cursor.map(|doc| doc.unwrap()).collect();
+    Ok(documents[0].clone())
+}
+
+pub fn search_staff
+    (keyword: Option<String>,
+     clinc_ids: Option<ObjectId>
+     skip: Option<i64>,
+     limit: Option<i64>)
+     -> Result<bson::Document, mongodb::error::Error>
+{
+    let mut pipelines = Vec::new();
+
+    pipelines.push(doc!{
+        "match": {
+            "role": 1
+        }
+    });
+    pipelines = to_pipelines(
+        pipelines, clinic_ids, Some(vec!["clinic".to_string()]), skip, limit, None, None
+    );
+    let cursor = collection.aggregate(pipelines, None)?;
+    let documents: Vec<_> = cursor.map(|doc| doc.unwrap()).collect();
+    Ok(documents[0].clone())
+}
+    
 
 pub fn get_client_info
     (email: String) -> Result<bson::Document, mongodb::error::Error>
 {
     let collection = get_collection::<ClientInfo>();
     let rs = collection.find_one(doc!{"email": email}, None)?;
-    Ok(bson::from_bson(Bson::Document(rs.unwrap())).unwrap())        
+    Ok(bson::from_bson(Bson::Document(rs.unwrap())).unwrap())
 }

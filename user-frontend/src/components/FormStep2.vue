@@ -13,7 +13,24 @@
 </template>
 
 <script>
+
+import {searchProvince} from "../api/api"
+
 export default {
   props: ["form"],
+  data() {
+    return {
+      provinceData: [],
+    };
+  },
+  async mounted() {
+    await this.getProvince();
+  },
+  methods: {
+    async getProvince() {
+      let data = await searchProvince();
+      console.log(data);
+    },
+  },
 };
 </script>

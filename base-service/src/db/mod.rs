@@ -78,3 +78,15 @@ pub fn get_all
 {
     query::get_all::<T>()
 }
+
+pub fn search_admin
+    (query: SearchQuery) -> Result<mongodb::bson::Document, mongodb::error::Error>
+{
+    query::search_admin(query.keyword, query.start, query.limit)
+}
+
+pub fn search_staff
+    (query: SearchQuery) -> Result<mongodb::bson::Document, mongodb::error::Error>
+{
+    query::search_staff(query.keyword, query.ids, query.start, query.limit)
+}

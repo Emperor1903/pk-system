@@ -110,8 +110,8 @@ export default {
             }
         },
         handleDetail(index, row) {
-            var id = row._id["$oid"];
-            this.$router.push(`clinic/${id}`)
+            // var id = row._id["$oid"];
+            // this.$router.push(`clinic/${id}`)
         },
         handleEdit(index, row) {
             this.updateState.id = row._id;

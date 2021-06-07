@@ -67,3 +67,17 @@ pub async fn create_staff_user
     let t = admin::create_staff_user(&id, &user).unwrap();
     do_response(t).await
 }
+
+pub async fn search_admin
+    (id: Identity, query: web::Json<SearchQuery>) -> HttpResponse
+{
+    let data = query.into_inner();
+    do_response(admin::search_admin(&id, data).unwrap()).await
+}
+
+pub async fn search_staff
+    (id: Identity, query: web::Json<SearchQuery>) -> HttpResponse
+{
+    let data = query.into_inner();
+    do_response(staff::search_staff(&id, data).unwrap()).await
+}
