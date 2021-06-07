@@ -14,4 +14,5 @@ pub async fn do_response<T:'static + std::marker::Send + Serialize>
 pub mod auth;
 pub mod admin;
 pub mod guest;
+pub mod staff;
 pub mod form;

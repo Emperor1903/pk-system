@@ -1,6 +1,7 @@
 <template>
 <div id="app">
   <Admin v-if="isAdmin"/>
+  <Staff v-if="isStaff" />  
   <Login v-if="notLogin" />
 </div>
 </template>
@@ -11,7 +12,8 @@ import { getIdentity } from "./api/auth";
 export default {
     components: {
         Admin: () => import("./views/Admin.vue"),
-        Login: () => import("./views/Login.vue"),        
+        Staff: () => import("./views/Staff.vue"),
+        Login: () => import("./views/Login.vue"),
     },
     data() {
         return {

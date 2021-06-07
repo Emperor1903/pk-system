@@ -1,6 +1,6 @@
 <template>
 <el-row type="flex" justify="center">
-  <el-col :xs="4" :sm="6" :md="4" :lg="4" :xl="4">
+  <el-col style="max-width: 300px">
     <LoginForm />
   </el-col>
 </el-row>

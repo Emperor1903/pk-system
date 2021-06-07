@@ -3,10 +3,12 @@
   <el-table :data="tableData" style="width: 100%">
     <el-table-column fixed label="STT" prop="index" width="50">
     </el-table-column>
-    <el-table-column label="Tài khoản" prop="username" width="300">
+    <el-table-column label="Tài khoản" prop="_id" width="150">
     </el-table-column>
-    <el-table-column label="Vai trò" prop="role_desc" width="300">
+    <el-table-column label="Vai trò" prop="role_name" width="300">
     </el-table-column>
+    <el-table-column label="Phòng khám" prop="clinic_name" width="500">
+    </el-table-column>    
     <el-table-column fixed="right" align="right"  width="250">
       <template slot="header" slot-scope="scope">
         <el-button
@@ -41,6 +43,7 @@
         </el-button>
       </template>
     </el-table-column>
+
   </el-table>
   <el-pagination
     @current-change="handlePageChange"
@@ -51,22 +54,23 @@
   
   
   <DeleteDialog :state="deleteState" @confirm="updateData"/>
-  <NewHospitalDialog :state="newState" @confirm="updateData"/>
-  <UpdateHospitalDialog :state="updateState" @confirm="updateData"/>    
+  <NewStaffDialog :state="newState" @confirm="updateData"/>
+  <UpdateStaffDialog :state="updateState" @confirm="updateData"/>    
 </div>
 
 </template>
 
 <script>
 import { TABLE_LIMIT } from "../api/config";
-import { searchHospital, searchProvince } from "../api/admin";
+import { searchStaff, getDocument } from "../api/admin";
 
 export default {
-    name: "HospitalTable",
+    name: "StaffTable",
+    props: ["id"],
     components: {
         DeleteDialog: () => import("./DeleteDialog.vue"),
-        NewHospitalDialog: () => import("./NewHospitalDialog.vue"),
-        UpdateHospitalDialog: () => import("./UpdateHospitalDialog.vue"),
+        NewStaffDialog: () => import("./NewStaffDialog.vue"),
+        UpdateStaffDialog: () => import("./UpdateStaffDialog.vue"),
     },
     data() {
         return {
@@ -75,18 +79,18 @@ export default {
             total: 0,
             deleteState: {
                 title: "Bệnh viện",
-                doc: "hospital",
+                doc: "staff",
                 data: {},
                 visible: false,
             },
             newState: {
-                title: "Bệnh viện",
-                doc: "hospital",
+                title: "Quản trị viên",
+                doc: "staff",
                 visible: false,
             },
             updateState: {
-                title: "Bệnh viện",
-                doc: "hospital",
+                title: "Quản trị viên",
+                doc: "staff",
                 data: {},
                 visible: false,
             },
@@ -99,14 +103,19 @@ export default {
     methods: {
         async getData(page) {
             var start = (page - 1) * TABLE_LIMIT;
-            var data = await searchHospital(this.search, start);
+            var data = await searchStaff(this.search, this.id, start);
             this.tableData = [];            
             if (data) {
                 this.total = data.total;
+                data = data.data;
                 for (let i = 0; i < Math.min(TABLE_LIMIT, this.total - start); ++i) {
-                    data.data[i].index = i + 1 + start;
+                    data[i].index = i + 1 + start;
+                    if(data[i].role == 0) data[i].role_name = "Quản trị viên"
+                    else if(data[i].role == 1) data[i].role_name = "Nhân viên phòng khám"
+                    var clinic = await getDocument("clinic", data[i].clinic);
+                    if(clinic) data[i].clinic_name = clinic.name;
                 }
-                this.tableData = data.data;
+                this.tableData = data;
             }
         },
         handleDetail(index, row) {

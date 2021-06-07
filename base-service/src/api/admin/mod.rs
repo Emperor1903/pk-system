@@ -5,7 +5,7 @@ use actix_web::{web, HttpResponse};
 use actix_identity::Identity;
 use mongodb::bson::oid::ObjectId;
 
-use crate::api::{do_response, form::{SearchQuery, UpdateForm}};
+use crate::api::{do_response, form::*};
 use crate::app::admin;
 use crate::api::form::UserForm;
 
@@ -56,13 +56,13 @@ pub async fn create_shifts
 }
 
 pub async fn create_admin_user
-    (id: Identity, user: web::Form<UserForm>) -> HttpResponse
+    (id: Identity, user: web::Json<UserForm>) -> HttpResponse
 {
     do_response(admin::create_admin_user(&id, &user).unwrap()).await
 }
 
 pub async fn create_staff_user
-    (id: Identity, user: web::Form<UserForm>) -> HttpResponse
+    (id: Identity, user: web::Json<UserForm>) -> HttpResponse
 {
     let t = admin::create_staff_user(&id, &user).unwrap();
     do_response(t).await
@@ -79,5 +79,12 @@ pub async fn search_staff
     (id: Identity, query: web::Json<SearchQuery>) -> HttpResponse
 {
     let data = query.into_inner();
-    do_response(staff::search_staff(&id, data).unwrap()).await
+    do_response(admin::search_staff(&id, data).unwrap()).await
+}
+
+pub async fn delete_user
+    (id: Identity, query: web::Json<String>) -> HttpResponse
+{
+    let data = query.into_inner();
+    do_response(admin::delete_user(&id, data).unwrap()).await    
 }

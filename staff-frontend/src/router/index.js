@@ -26,7 +26,7 @@ const routes = [
     },
     {
         path: "/clinics",
-        name: "AllClinic",
+        name: "Clinics",
         component: () => import("../views/Clinic.vue"),
         meta: { admin: true }
     },
@@ -44,35 +44,53 @@ const routes = [
     },
     {
         path: "/doctor/:id",
-        name: "Doctor",
+        name: "DoctorsInClinic",
         component: () => import("../views/Doctor.vue"),
         meta: { admin: true }
     },
     {
         path: "/doctors",
-        name: "AllDoctor",
+        name: "Doctors",
         component: () => import("../views/Doctor.vue"),
         meta: { admin: true }
     },
     {
         path: "/schedule/:id",
-        name: "Schedule",
+        name: "ScheduleInDoctors",
         component: () => import("../views/Schedule.vue"),
         meta: { admin: true }
     },
     {
         path: "/shift/:id",
-        name: "Shift",
+        name: "ShiftsInDoctors",
         component: () => import("../views/Shift.vue"),
         meta: { admin: true }
     },
     {
         path: "/shifts",
-        name: "AllShift",
+        name: "Shifts",
         component: () => import("../views/Shift.vue"),
         meta: { admin: true }
     },
-
+    {
+        path: "/admins",
+        name: "Admins",
+        component: () => import("../views/AdminUser.vue"),
+        meta: { admin: true }
+    },
+    {
+        path: "/staffs",
+        name: "Staffs",
+        component: () => import("../views/StaffUser.vue"),
+        meta: { admin: true }
+    },
+    //staf
+    {
+        path: "/staff/doctor",
+        name: "StaffDoctors",
+        component: () => import("../views/Doctor.vue"),
+        meta: { staff: true }
+    },
 ];
 
 const router = new VueRouter({
@@ -81,9 +99,18 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+    var identity = await getIdentity();
+    
+    if (!identity) next("/login");
+    
     if (to.matched.some(record => record.meta.admin)) {
-        var identity = await getIdentity();
-        if (identity && identity.role == 0) {
+        if (identity.role == 0) {
+            next();
+            return;
+        }
+        next("/login");
+    } else if (to.matched.some(record => record.meta.staff)) {
+        if (identity.role == 1) {
             next();
             return;
         }

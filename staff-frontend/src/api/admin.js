@@ -1,4 +1,3 @@
-// import axios from "axios";
 import { API_URL, TABLE_LIMIT } from "./config";
 import {removeVietnameseTones} from "./utils";
 
@@ -173,6 +172,44 @@ newClinic(
 }
 
 export async function
+newAdmin(
+    username,
+    password)
+{
+    try {
+        var data = await newDocument("admin", {
+            username: username,
+            password: password,
+        });
+        return data;
+    } catch(err) {
+        console.log(err);
+        return null;
+    }
+}
+
+export async function
+newStaff(
+    username,
+    password,
+    clinic)
+{
+    try {
+        var data = await newDocument("staff", {
+            username: username,
+            password: password,
+            clinic: clinic,
+        });
+        return data;
+    } catch(err) {
+        console.log(err);
+        return null;
+    }
+}
+
+
+
+export async function
 newProvince(name) {
     var data = await newDocument("province", {
         name: name,
@@ -226,7 +263,7 @@ searchClinic(
     limit = TABLE_LIMIT
 ) {
     var fields = ['hospital'];
-    var ids = []
+    var ids = [];
     if (hospital) {
         ids = [{"$oid": hospital}];
     }
@@ -291,6 +328,27 @@ searchShift(
     return data;
 }
 
+export async function
+searchAdmin(
+    keyword,
+    start,
+    limit=TABLE_LIMIT
+) {
+    var data = await searchDocument("admin", keyword, null, null, start, limit);
+    return data;
+}
+
+export async function
+searchStaff(
+    keyword,
+    clinic,
+    start,
+    limit=TABLE_LIMIT
+) {
+    var ids = clinic ? [{"$oid": clinic}] : null;
+    var data = await searchDocument("staff", keyword, null, ids, start, limit);
+    return data;
+}
 
 export async function
 searchSpecialization(
@@ -307,11 +365,6 @@ searchProvince() {
     var data = await searchDocument("province", null, null, null, 0, 1000);
     return data;
 }
-
-
-
-
-
 
 
 export async function
@@ -439,5 +492,4 @@ uploadImage(file) {
         console.log(err)
         return null;
     }
-    
 }

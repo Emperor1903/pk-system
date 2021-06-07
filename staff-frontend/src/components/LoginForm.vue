@@ -17,8 +17,8 @@
           v-model="model.password"
           placeholder="Password"
           type="password"
-          prefix-icon="fas fa-lock"
-          ></el-input>
+          prefix-icon="fas fa-lock">
+        </el-input>
       </el-form-item>
       <el-form-item>
         <el-button
@@ -26,8 +26,7 @@
           class="login-button"
           type="primary"
           native-type="submit"
-          block
-          >Login</el-button>
+          block>Đăng nhập</el-button>
       </el-form-item>
       <!-- <a class="forgot-password" href="https://oxfordinformatics.com/">Forgot password ?</a> -->
     </el-form>

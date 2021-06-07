@@ -53,6 +53,8 @@ pub fn delete
     Ok(id)
 }
 
+
+
 pub fn get
     <T: Clone + Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send,
      U: Clone + From<U>>
@@ -79,8 +81,8 @@ pub fn get_all
     Ok(documents)
 }
     
-pub to_pipelines
-    (pre_pipe: Option<Vec<Bson::Document>>,
+pub fn to_pipelines
+    (pre_pipe: Option<Vec<bson::Document>>,
      keyword: Option<String>,
      ids: Option<Vec<ObjectId>>,
      fields: Option<Vec<String>>,
@@ -88,12 +90,14 @@ pub to_pipelines
      limit: Option<i64>,
      start_time: Option<i64>,
      end_time: Option<i64>)
-     -> Vec<Bson::Document>
+     -> Vec<bson::Document>
 {
-    let mut pipelines = Vec::new();
+    let mut pipelines: Vec<bson::Document> = Vec::new();
 
-    for i in pre_pipe {
-        pipelines.push(i);
+    if let Some(pipe) = pre_pipe {
+        for i in pipe.iter() {
+            pipelines.push(i.clone());
+        }        
     }
     
     if let Some(v) = ids {
@@ -175,7 +179,7 @@ pub fn search
 {
     let collection = get_collection::<T>();
     let pipelines = to_pipelines(
-        None, ids, fields, skip, limit, start_time, end_time
+        None, keyword, ids, fields, skip, limit, start_time, end_time
     );
     let cursor = collection.aggregate(pipelines, None)?;
     let documents: Vec<_> = cursor.map(|doc| doc.unwrap()).collect();
@@ -188,16 +192,18 @@ pub fn search_admin
      limit: Option<i64>)
      -> Result<bson::Document, mongodb::error::Error>
 {
+    let collection = get_collection::<UserInfo>();
     let mut pipelines = Vec::new();
 
     pipelines.push(doc!{
-        "match": {
+        "$match": {
             "role": 0
         }
     });
     pipelines = to_pipelines(
-        pipelines, None, None, skip, limit, None, None
+        Some(pipelines), keyword, None, None, skip, limit, None, None
     );
+    println!("{:?}", pipelines);    
     let cursor = collection.aggregate(pipelines, None)?;
     let documents: Vec<_> = cursor.map(|doc| doc.unwrap()).collect();
     Ok(documents[0].clone())
@@ -205,20 +211,21 @@ pub fn search_admin
 
 pub fn search_staff
     (keyword: Option<String>,
-     clinc_ids: Option<ObjectId>
+     clinic_ids: Option<Vec<ObjectId>>,
      skip: Option<i64>,
      limit: Option<i64>)
      -> Result<bson::Document, mongodb::error::Error>
 {
+    let collection = get_collection::<UserInfo>();
     let mut pipelines = Vec::new();
 
     pipelines.push(doc!{
-        "match": {
+        "$match": {
             "role": 1
         }
     });
     pipelines = to_pipelines(
-        pipelines, clinic_ids, Some(vec!["clinic".to_string()]), skip, limit, None, None
+        Some(pipelines), keyword, clinic_ids, Some(vec!["clinic".to_string()]), skip, limit, None, None
     );
     let cursor = collection.aggregate(pipelines, None)?;
     let documents: Vec<_> = cursor.map(|doc| doc.unwrap()).collect();
