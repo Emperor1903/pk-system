@@ -1,6 +1,6 @@
 import { API_URL } from "./config";
 
-async function searchProvince() {
+export async function searchProvince() {
     try {
         let url = `${API_URL}/api/province/_search`
         const options = {

@@ -17,8 +17,12 @@
     <FormStep3 v-if="active == 2" :form="form"></FormStep3>
     <FormStep4 v-if="active == 3" :form="form"></FormStep4>
     <FormStep5 v-if="active == 4" :form="form"></FormStep5>
-    <el-button v-if="active>0" style="margin-top: 12px" @click="previous">Bước trước</el-button>
-    <el-button v-if="active<4" style="margin-top: 12px" @click="next">Bước sau</el-button>
+    <el-button v-if="active > 0" style="margin-top: 12px" @click="previous"
+      >Bước trước</el-button
+    >
+    <el-button v-if="active < 4" style="margin-top: 12px" @click="next"
+      >Bước sau</el-button
+    >
   </el-dialog>
 </template>
 
@@ -43,11 +47,13 @@ export default {
         address: "",
         gender_is_male: true,
         email: "",
-        province:"",
-        hospital:"",
+        province: "",
+        hospital: "",
         clinic: "",
         doctor: "",
-        shift:""
+        shift: "",
+        doctorData: [],
+        shiftData: [],
       },
     };
   },
@@ -55,9 +61,9 @@ export default {
     next() {
       this.active++;
     },
-    previous(){
+    previous() {
       this.active--;
-    }
+    },
   },
 };
 </script>

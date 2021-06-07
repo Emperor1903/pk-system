@@ -28,7 +28,7 @@
       <el-menu-item index="4"
         ><a href="https://www.ele.me" target="_blank">Orders</a></el-menu-item
       > -->
-      
+
       <el-menu-item fixed="right" align="right">
         <span>
           <el-button
@@ -41,7 +41,6 @@
         </span>
       </el-menu-item>
     </el-menu>
-    <NewLedgerDialog :state="newLedgerState"></NewLedgerDialog>
     <NewBookingTicketDialog
       :state="newBookingTicketState"
     ></NewBookingTicketDialog>
@@ -51,7 +50,6 @@
 <script>
 export default {
   components: {
-    NewLedgerDialog: () => import("./NewLedgerDialog"),
     NewBookingTicketDialog: () => import("./NewBookingTicketDialog.vue"),
   },
   data() {
@@ -70,8 +68,11 @@ export default {
     };
   },
   methods: {
-    handleSelect(key, keyPath) {
-      console.log(key, keyPath);
+    async handleSelect(key, keyPath) {
+      switch (key) {
+        case "2":
+          await this.$router.push("/search");
+      }
     },
     handleNewLedger() {
       this.newLedgerState.visible = true;
