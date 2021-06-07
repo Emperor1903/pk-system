@@ -9,6 +9,10 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home
+  }, {
+    path: '/search',
+    name: 'Search',
+    component: () => import('../views/Search')
   },
   {
     path: '/about',
@@ -21,7 +25,8 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  routes
+  mode: "history",
+  routes: routes
 })
 
 export default router
