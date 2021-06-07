@@ -2,12 +2,12 @@ use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::fmt::Debug;
 use actix_web::{web, HttpResponse};
-
-use mongodb::bson::oid::ObjectId;
 use actix_identity::Identity;
+use mongodb::bson::oid::ObjectId;
 
-use crate::api::{do_response, form::{SearchQuery,RelateSearchQuery}};
+use crate::api::{do_response, form::{SearchQuery, UpdateForm}};
 use crate::app::admin;
+use crate::api::form::UserForm;
 
 pub async fn create
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
@@ -19,16 +19,17 @@ pub async fn create
 
 pub async fn search
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (web::Query(query): web::Query<SearchQuery>, id: Identity) -> HttpResponse
+    (id: Identity, query: web::Json<SearchQuery>) -> HttpResponse
 {
-    do_response(admin::search::<T>(&id, query).unwrap()).await
+    let data = query.into_inner();
+    do_response(admin::search::<T>(&id, data).unwrap()).await
 }
 
 pub async fn update
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (item: web::Json<T>, id: Identity) -> HttpResponse
+    (item: web::Json<UpdateForm<T, ObjectId>>, id: Identity) -> HttpResponse
 {
-    let data: T = item.into_inner();
+    let data: UpdateForm<T, ObjectId> = item.into_inner();
     do_response(admin::update::<T>(&id, &data).unwrap()).await
 }
 
@@ -48,10 +49,35 @@ pub async fn get
     do_response(admin::get::<T>(&id, data).unwrap()).await
 }
 
-pub async fn relate
-    <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (item: web::Json<RelateSearchQuery>, id: Identity) -> HttpResponse
+pub async fn create_shifts
+    (id: Identity) -> HttpResponse
 {
-    let query = item.into_inner();
-    do_response(admin::relate::<T>(&id, query).unwrap()).await
+    do_response(admin::create_shifts(&id)).await
+}
+
+pub async fn create_admin_user
+    (id: Identity, user: web::Form<UserForm>) -> HttpResponse
+{
+    do_response(admin::create_admin_user(&id, &user).unwrap()).await
+}
+
+pub async fn create_staff_user
+    (id: Identity, user: web::Form<UserForm>) -> HttpResponse
+{
+    let t = admin::create_staff_user(&id, &user).unwrap();
+    do_response(t).await
+}
+
+pub async fn search_admin
+    (id: Identity, query: web::Json<SearchQuery>) -> HttpResponse
+{
+    let data = query.into_inner();
+    do_response(admin::search_admin(&id, data).unwrap()).await
+}
+
+pub async fn search_staff
+    (id: Identity, query: web::Json<SearchQuery>) -> HttpResponse
+{
+    let data = query.into_inner();
+    do_response(staff::search_staff(&id, data).unwrap()).await
 }

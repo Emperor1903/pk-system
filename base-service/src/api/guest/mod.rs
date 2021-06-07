@@ -6,7 +6,7 @@ use mongodb::bson::oid::ObjectId;
 
 use crate::models::*;
 use crate::db;
-use crate::api::{do_response, form::{SearchQuery, RelateSearchQuery}};
+use crate::api::{do_response, form::{SearchQuery}};
 
 
 pub async fn search
@@ -24,15 +24,7 @@ pub async fn get
     do_response(db::get::<T, ObjectId>(data)).await
 }
 
-pub async fn relate
-    <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (item: web::Json<RelateSearchQuery>) -> HttpResponse
-{
-    let query = item.into_inner();
-    do_response(db::search_relate::<T>(query)).await
-}
-
-pub async fn new_booking_ticket
+pub async fn create
     (item: web::Json<BookingTicket>) -> HttpResponse
 {
     let data = item.into_inner();
