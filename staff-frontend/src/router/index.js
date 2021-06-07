@@ -86,7 +86,7 @@ const routes = [
     },
     //staf
     {
-        path: "/staff/doctor",
+        path: "/staff/doctors",
         name: "StaffDoctors",
         component: () => import("../views/Doctor.vue"),
         meta: { staff: true }
