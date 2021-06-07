@@ -1,16 +1,15 @@
 <template>
 <div>
-  
   <el-table :data="tableData" style="width: 100%">
     <el-table-column fixed label="STT" prop="index" width="50">
     </el-table-column>
-    <el-table-column fixed label="Phòng khám" prop="name" width="450">
+    <el-table-column label="Phòng khám" prop="name" width="300">
     </el-table-column>
     <el-table-column label="Số điện thoại" prop="phone_num" width="250">
     </el-table-column>
-    <el-table-column label="Địa chỉ" prop="address">
+    <el-table-column label="Địa chỉ" prop="address" width="500">
     </el-table-column>
-    <el-table-column align="right">
+    <el-table-column align="right" fixed="right" width="250">
       <template slot="header" slot-scope="scope">
         <el-button
           size="mini"
@@ -63,7 +62,7 @@
 
 <script>
 import { TABLE_LIMIT } from "../api/config";
-import { searchClinic, searchProvince } from "../api/admin";
+import { searchClinic, getDocument } from "../api/admin";
 
 export default {
     name: "ClinicTable",
@@ -85,21 +84,12 @@ export default {
                 visible: false,
                 confirmed: false,
             },
-            newState: {
-                title: "Phòng khám",
-                doc: "clinic",
-                visible: false,
-                confirmed: false,
-                provinces: []
-            },
             updateState: {
-                title: "Phòng khám",
+                title: "Chỉnh sửa phòng khám",
                 doc: "clinic",
-                data: {},
                 visible: false,
-                confirmed: false,
-                provinces: []
             },
+            newState: {},
             page: 1,
         };
     },
@@ -110,7 +100,7 @@ export default {
         async getData(page) {
             var start = (page - 1) * TABLE_LIMIT;
             var data = await searchClinic(this.search, this.id, start);
-            this.tableData = [];            
+            this.tableData = [];
             if (data) {
                 this.total = data.total;
                 for (let i = 0; i < Math.min(TABLE_LIMIT, this.total - start); ++i) {
@@ -125,30 +115,36 @@ export default {
                 }
                 this.tableData = data.data;
             }
-            var provinces = await searchProvince();
-            this.newState.provinces = provinces.data;
-            this.updateState.provinces = provinces.data;
+            if(this.id) {
+                var response = await getDocument("hospital", this.id);
+                this.newState.hospitalName = response.name;
+                this.newState.hospital = {"$oid": this.id};
+                this.updateState.hospitalName = response.name;
+                this.updateState.hospital = {"$oid": this.id};
+            }
         },
         handleDetail(index, row) {
             var id = row._id["$oid"];
-            this.$router.push(`clinic/${id}`)
+            this.$router.push(`/doctor/${id}`)
         },
         handleEdit(index, row) {
-            this.updateState = {
-                title: "Phòng khám",
-                doc: "clinic",
-                data: row,
-                visible: true,
-                confirmed: false,
-                provinces: this.updateState.provinces,
-            };
+            this.updateState.id = row._id;
+            this.updateState.visible = true;
+            this.updateState = {...this.updateState};
         },
         handleDelete(index, row) {
             this.deleteState.visible = true;
             this.deleteState.data = row;
         },
         handleNew() {
-            this.newState.visible = true;
+            this.newState = {
+                title: "Tạo phòng khám",
+                doc: "clinic",
+                visible: true,
+                confirmed: false,
+                hospital: this.newState.hospital,
+                hospitalName: this.newState.hospitalName,
+            }
         },
         async handlePageChange(page) {
             this.page = page;

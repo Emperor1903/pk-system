@@ -5,20 +5,6 @@ use crate::api::do_response;
 use crate::api::form::UserForm;
 use crate::app::auth;
 
-pub async fn
-    create_admin_user(id: Identity, user: web::Form<UserForm>) -> HttpResponse
-{
-    do_response(auth::create_admin_user(&id, &user).unwrap()).await
-}
-
-pub async fn
-    create_staff_user(id: Identity, user: web::Form<UserForm>) -> HttpResponse
-{
-    let t = auth::create_staff_user(&id, &user).unwrap();
-    println!("{:?}", t);
-    do_response(t).await
-}
-
 pub async fn login
     (id: Identity, form: web::Form<UserForm>) -> HttpResponse
 {

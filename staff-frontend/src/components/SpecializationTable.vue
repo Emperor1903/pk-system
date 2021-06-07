@@ -46,10 +46,15 @@
       :total="total"
     >
     </el-pagination>
+    <DeleteDialog :state="deleteState" @confirm="updateData" />
     <UpdateSpeciationDialog
       :state="updateState"
       @confirm="updateData"
     ></UpdateSpeciationDialog>
+    <NewSpeciationDialog
+      :state="newState"
+      @confirm="updateData"
+    ></NewSpeciationDialog>
   </div>
 </template>
 
@@ -60,6 +65,8 @@ export default {
   name: "SpecializationTable",
   components: {
     UpdateSpeciationDialog: () => import("./UpdateSpeciationDialog"),
+    NewSpeciationDialog: () => import("./NewSpeciationDialog"),
+    DeleteDialog: () => import("./DeleteDialog.vue"),
   },
   data() {
     return {
@@ -67,7 +74,21 @@ export default {
       searchValue: "",
       total: 0,
       page: 1,
+      newState: {
+        title: "Chuyên khoa",
+        doc: "specialization",
+        data: {},
+        visible: false,
+        confirmed: false,
+      },
       updateState: {
+        title: "Chuyên khoa",
+        doc: "specialization",
+        data: {},
+        visible: false,
+        confirmed: false,
+      },
+      deleteState: {
         title: "Chuyên khoa",
         doc: "specialization",
         data: {},
@@ -97,6 +118,9 @@ export default {
     async handleSearch() {
       await this.getData(1);
     },
+    handleNew() {
+      this.newState.visible = true;
+    },
     handleEdit(index, row) {
       this.updateState = {
         title: "Chuyên khoa",
@@ -105,6 +129,10 @@ export default {
         visible: true,
         confirmed: false,
       };
+    },
+    handleDelete(index, row) {
+      this.deleteState.visible = true;
+      this.deleteState.data = row;
     },
     async updateData() {
       await this.getData(this.page);

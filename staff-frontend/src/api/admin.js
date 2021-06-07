@@ -1,6 +1,5 @@
 // import axios from "axios";
 import { API_URL, TABLE_LIMIT } from "./config";
-import Imgbb from "imgbbjs";
 import {removeVietnameseTones} from "./utils";
 
 async function
@@ -20,10 +19,33 @@ newDocument(name, body) {
     }
 }
 
+export async function
+createShifts() {
+    try {
+        var url = `${API_URL}/admin/shift/_new_week`;
+        const options = {
+            method: "POST",
+        }
+        var response = await fetch(url, options);
+        var data = response.text();
+        return data;
+    } catch(err) {
+        console.log(err);
+        return null;
+    }
+}
+
 async function
 searchDocument(name, keyword, fields, ids, start, limit) {
     try {
         var url = new URL(`${API_URL}/admin/${name}/_search`);
+        if (!keyword) keyword = null;
+        if (!fields || !ids) {
+            fields = null;
+            ids = null;
+        }
+        if (!start) start = null;
+        if (!limit) limit = null;
         const options = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -43,6 +65,7 @@ searchDocument(name, keyword, fields, ids, start, limit) {
         };
         return data;
     } catch (err) {
+        console.log(err);
         return null;
     }
 }
@@ -80,6 +103,7 @@ getDocument(name, id) {
         var data = await response.json();
         return data;
     } catch(err) {
+        console.log(err);
         return null;
     }
     
@@ -90,7 +114,7 @@ deleteDocument(name, id) {
     try {
         var url = `${API_URL}/admin/${name}/_delete`;
         const options = {
-            method: "POST",
+            method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(id),
         };
@@ -126,25 +150,24 @@ newHospital(name, desc, province, address, phoneNum, images=[]) {
 }
 
 export async function
-newClinic(name,
-          desc,
-          address,
-          timeDesc,
-          phoneNum,
-          specializations,
-          hospital,
-          images=[],
-         ) {
+newClinic(
+    name,
+    desc,
+    address,
+    timeDesc,
+    phoneNum,
+    hospital,
+    images=[],
+) {
     var data = await newDocument("clinic", {
         name: name,
         desc: desc,
         address: address,
         time_desc: timeDesc,
         phone_num: phoneNum,
-        specializations: specializations,
         hospital: hospital,
         images: images,
-        search_keyword: removeVietnameseTones(name + " " + " " + address),        
+        search_keyword: removeVietnameseTones(name + " " + address),        
     });
     return data;
 }
@@ -159,26 +182,122 @@ newProvince(name) {
 }
 
 export async function
-searchHospital(keyword, start, limit = TABLE_LIMIT) {
+newDoctor(
+    name,
+    shortIntro,
+    intro,
+    clinic,
+    specialization,
+    position,
+    email,
+    phoneNum,
+    images,
+) {
+    var data = await newDocument("doctor", {
+        name: name,
+        short_intro: shortIntro,
+        intro: intro,
+        clinic: clinic,
+        specialization: specialization,
+        position: position,
+        email: email,
+        phone_num: phoneNum,
+        images: images,
+        keyword:  removeVietnameseTones(position + " " + name),
+    });
+    return data;
+}
+
+export async function
+searchHospital(
+    keyword,
+    start,
+    limit = TABLE_LIMIT
+) {
     var data = await searchDocument("hospital", keyword, null, null, start, limit);
     return data;
 }
 
 export async function
-searchClinic(keyword, hospital, start, limit = TABLE_LIMIT) {
+searchClinic(
+    keyword,
+    hospital,
+    start,
+    limit = TABLE_LIMIT
+) {
+    var fields = ['hospital'];
+    var ids = []
+    if (hospital) {
+        ids = [{"$oid": hospital}];
+    }
     var data = await searchDocument("clinic",
                                     keyword,
-                                    ['hospital'],
-                                    [{
-                                        "$oid": hospital
-                                    }],
+                                    fields,
+                                    ids,
                                     start,
                                     limit);
     return data;
 }
 
 export async function
-searchSpecialization(keyword, start, limit = TABLE_LIMIT){
+searchDoctor(
+    keyword,
+    clinic,
+    start,
+    limit = TABLE_LIMIT
+) {
+    var fields = ["clinic"];
+    var ids = [];
+    if (clinic) {
+        ids = [{"$oid": clinic}];
+    }
+    var data = await searchDocument("doctor",
+                                    keyword,
+                                    fields,
+                                    ids,
+                                    start,
+                                    limit);
+    return data;
+}
+
+
+export async function
+searchSchedule(
+    doctor,
+    start,
+    limit=TABLE_LIMIT,
+) {
+    var fields = ["doctor"];
+    var ids = [];
+    if (doctor) {
+        ids = [{"$oid": doctor}];
+    }
+    var data = await searchDocument("schedule", null, fields, ids, start, limit);
+    return data;
+}
+
+export async function
+searchShift(
+    doctor,
+    start,
+    limit=TABLE_LIMIT
+) {
+    var fields = ["doctor"];
+    var ids = [];
+    if (doctor) {
+        ids = [{"$oid": doctor}];
+    }
+    var data = await searchDocument("shift", null, fields, ids, start, limit);
+    return data;
+}
+
+
+export async function
+searchSpecialization(
+    keyword,
+    start,
+    limit = TABLE_LIMIT
+){
     let data = await searchDocument("specialization", keyword, null, null, start, limit);
     return data;
 }
@@ -189,6 +308,12 @@ searchProvince() {
     return data;
 }
 
+
+
+
+
+
+
 export async function
 updateHospital(id, name, desc, province, address, phoneNum, images=[]) {
     var data = await updateDocument("hospital", id, {
@@ -198,37 +323,85 @@ updateHospital(id, name, desc, province, address, phoneNum, images=[]) {
         address: address,
         phone_num: phoneNum,
         images: images,
-        search_keyword: removeVietnameseTones(name + " " + " " + address),        
+        search_keyword: removeVietnameseTones(name + " " + address),        
     });
 }
 
 export async function
-updateClinic(id,
-             name,
-             desc,
-             address,
-             timeDesc,
-             phoneNum,
-             specializations,
-             hospital,
-             images=[],) {
+updateDoctor(
+    id,
+    name,
+    shortIntro,
+    intro,
+    clinic,
+    specialization,
+    position,
+    email,
+    phoneNum,
+    images,
+) {
+    var data = await updateDocument(
+        "doctor",
+        id, {
+            name: name,
+            short_intro: shortIntro,
+            intro: intro,
+            clinic: clinic,
+            specialization: specialization,
+            position: position,
+            email: email,
+            phone_num: phoneNum,
+            images: images,
+            keyword:  removeVietnameseTones(position + " " + name),
+        });
+    return data;
+}
+
+export async function
+newSchedule(
+    doctor,
+    clinic,
+    shift_num,
+    shift_day
+) {
+    var data = await newDocument("schedule", {
+        doctor: doctor,
+        clinic: clinic,
+        shift_num: shift_num,
+        shift_day: shift_day
+    });
+    return data;
+}
+
+export async function
+updateClinic(
+    id,
+    name,
+    desc,
+    address,
+    timeDesc,
+    phoneNum,
+    hospital,
+    images=[],) {
     var data = await updateDocument("clinic", id, {
         name: name,
         desc: desc,
         address: address,
         time_desc: timeDesc,
         phone_num: phoneNum,
-        specializations: specializations,
         hospital: hospital,
-        search_keyword: removeVietnameseTones(name + " " + " " + address),
+        search_keyword: removeVietnameseTones(name + " " + address),
         images: images,
     });
     return data;
 }
 
 export async function
-updateSpecialization(id, name, desc) {
-    var data = await updateDocument("hospital", id, {
+updateSpecialization(
+    id,
+    name,
+    desc) {
+    var data = await updateDocument("specialization", id, {
         name: name,
         desc: desc,
         search_keyword: removeVietnameseTones(name),
@@ -237,7 +410,9 @@ updateSpecialization(id, name, desc) {
 }
 
 export async function
-updateProvince(id, name) {
+updateProvince(
+    id,
+    name) {
     var data = await updateDocument("province", id, {
         name: name,
         search_keyword: removeVietnameseTones(name),
@@ -253,11 +428,16 @@ uploadImage(file) {
     var url = `https://api.imgbb.com/1/upload?key=${key}`
     var data = new UFormData();
     data.append("image", file);
-    var response = await fetch(url, {
-        method: "POST",
-        body: data,
-    });
-    var data = await response.json();
-    return data;
+    try {
+        var response = await fetch(url, {
+            method: "POST",
+            body: data,
+        });
+        var rs = await response.json();
+        return rs;
+    } catch(err) {
+        console.log(err)
+        return null;
+    }
+    
 }
-

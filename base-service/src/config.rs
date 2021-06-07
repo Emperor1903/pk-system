@@ -1,5 +1,9 @@
 use serde::Deserialize;
-use config::ConfigError;
+use lazy_static::lazy_static;
+
+lazy_static! {
+    pub static ref CONFIG: Config = Config::from_env();
+}
 
 #[derive(Deserialize)]
 pub struct ServerConfig {
@@ -14,16 +18,23 @@ pub struct MongodbConfig {
 }
 
 #[derive(Deserialize)]
+pub struct EmailConfig {
+    pub server: String,
+    pub username: String,
+    pub password: String,
+}
+
+#[derive(Deserialize)]
 pub struct Config {
     pub server: ServerConfig,
     pub mongodb: MongodbConfig,
-    pub imgbb_api: String
+    pub email: EmailConfig,
 }
 
 impl Config {
-    pub fn from_env() -> Result<Self, ConfigError> {
+    pub fn from_env() -> Self {
         let mut cfg = config::Config::new();
-        cfg.merge(config::Environment::new())?;
-        cfg.try_into()
+        cfg.merge(config::Environment::new()).unwrap();
+        cfg.try_into().unwrap()
     }
 }

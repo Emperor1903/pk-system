@@ -24,7 +24,7 @@ pub async fn get
     do_response(db::get::<T, ObjectId>(data)).await
 }
 
-pub async fn new_booking_ticket
+pub async fn create
     (item: web::Json<BookingTicket>) -> HttpResponse
 {
     let data = item.into_inner();

@@ -1,20 +1,38 @@
 <template>
-  <div id="app">
-    <el-row>
-      <el-col :span="4"><Navbar></Navbar></el-col>
-      <el-col :span="20"><router-view /></el-col>
-    </el-row>
-  </div>
+<div id="app">
+  <Admin v-if="isAdmin"/>
+  <Login v-if="notLogin" />
+</div>
 </template>
 
-<style>
-.app {
-    word-break: normal    
-}
-</style>
-
 <script>
+import { getIdentity } from "./api/auth";
+
 export default {
-  components: { Navbar: () => import("./components/Navbar") },
+    components: {
+        Admin: () => import("./views/Admin.vue"),
+        Login: () => import("./views/Login.vue"),        
+    },
+    data() {
+        return {
+            identity: -1,
+        }
+    },
+    computed: {
+        isAdmin() {
+            return this.identity == 0;
+        },
+        isStaff() {
+            return this.identity == 1;
+        },
+        notLogin() {
+            return this.identity < 0;
+        },
+    },
+    async mounted() {
+        var identity = await getIdentity();
+        if (identity) this.identity = identity.role;
+    }
 };
 </script>
+

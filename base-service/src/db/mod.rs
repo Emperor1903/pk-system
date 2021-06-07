@@ -6,15 +6,14 @@ use mongodb::sync::{Client, Database};
 use lazy_static::lazy_static;
 use mongodb::bson::Bson;
 
-use crate::config::Config;
+use crate::config::CONFIG;
 
 lazy_static! {
     pub static ref DB: Database = get_mongodb_db();
 }
 
 fn get_mongodb_db() -> Database {
-    let config = Config::from_env().unwrap();
-    let client = Client::with_uri_str(&*config.mongodb.uri).expect("failed to init mongo client");    
+    let client = Client::with_uri_str(&*CONFIG.mongodb.uri).expect("failed to init mongo client");    
     client.database("pk-db")
 }
 
@@ -26,7 +25,6 @@ pub fn create
 {
     query::create(data)
 }
-
 
 pub fn update
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone,
@@ -62,7 +60,21 @@ pub fn search
                        query.ids,
                        query.fields,
                        query.start,
-                       query.limit,
+                       query.limit,                       
                        query.start_time,
                        query.end_time)
+}
+
+
+pub fn get_client_info
+    (email: &String) -> Result<mongodb::bson::Document, mongodb::error::Error>
+{
+    query::get_client_info(email.clone())
+}
+    
+pub fn get_all
+    <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
+    () -> Result<Vec<T>, mongodb::error::Error>
+{
+    query::get_all::<T>()
 }

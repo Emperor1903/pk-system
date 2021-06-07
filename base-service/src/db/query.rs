@@ -2,9 +2,12 @@ use serde::de::DeserializeOwned;
 use serde::Serialize;
 use core::fmt::Debug;
 use mongodb::bson;
-use mongodb::bson::{doc, Bson, oid::ObjectId};
+use mongodb::bson::oid::ObjectId;
+use bson::{Bson, doc};
 
 use crate::utils::get_struct_name;
+use crate::models::*;
+
 use super::DB;
 
 fn get_collection<T>() -> mongodb::sync::Collection<mongodb::bson::Document> {
@@ -61,6 +64,22 @@ pub fn get
     Ok(bson::from_bson(Bson::Document(rs.unwrap())).unwrap())
 }
 
+pub fn get_all
+<T: Clone + Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
+    ()
+     ->  Result<Vec<T>, mongodb::error::Error>
+{
+    let collection = get_collection::<T>();
+    let cursor = collection.find(None, None)?;
+    let bson_to_t = |d| -> T {
+        bson::from_bson(Bson::Document(d)).unwrap()
+    };
+    let documents: Vec<_> = cursor.map(|doc| bson_to_t(doc.unwrap())).collect();
+
+    Ok(documents)
+}
+    
+
 pub fn search
     <T: Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send>
     (keyword: Option<String>,
@@ -114,7 +133,7 @@ pub fn search
         pipelines.push(stage);
     }
     let mut page_v = Vec::new();
-    if let Some(v) = skip { 
+    if let Some(v) = skip {
         let stage = doc! {"$skip": v};
         page_v.push(stage);
     }
@@ -142,4 +161,12 @@ pub fn search
 
     let documents: Vec<_> = cursor.map(|doc| doc.unwrap()).collect();
     Ok(documents[0].clone())
+}
+
+pub fn get_client_info
+    (email: String) -> Result<bson::Document, mongodb::error::Error>
+{
+    let collection = get_collection::<ClientInfo>();
+    let rs = collection.find_one(doc!{"email": email}, None)?;
+    Ok(bson::from_bson(Bson::Document(rs.unwrap())).unwrap())        
 }

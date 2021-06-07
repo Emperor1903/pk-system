@@ -47,7 +47,7 @@ fn valid_password(password: &String) -> bool {
     true
 }
 
-fn create_user
+pub fn create_user
     (form: &UserForm, role: i32) -> Option<Result<Bson, mongodb::error::Error>>
 {
     if !valid_username(&form.username) {
@@ -66,30 +66,11 @@ fn create_user
     let user_info = UserInfo {
         username: form.username.clone(),        
         role: role,
+        clinic: form.clinic.clone(),
     };
     let _t = db::create::<User>(&user).expect("failed to create user");
     let t = db::create::<UserInfo>(&user_info);
     Some(t)
-}
-
-pub fn create_admin_user
-    (id: &Identity, form: &UserForm) -> Option<Result<Bson, mongodb::error::Error>>
-{
-    if check_role(id, 0) {
-        create_user(form, 0)
-    } else {
-        None
-    }
-}
-
-pub fn create_staff_user
-    (id: &Identity, form: &UserForm) -> Option<Result<Bson, mongodb::error::Error>>
-{
-    if check_role(id, 0) {
-        create_user(form, 0)
-    } else {
-        None
-    }        
 }
 
 fn remember_user

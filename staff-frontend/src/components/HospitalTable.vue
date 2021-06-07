@@ -1,16 +1,15 @@
 <template>
 <div>
-  
   <el-table :data="tableData" style="width: 100%">
     <el-table-column fixed label="STT" prop="index" width="50">
     </el-table-column>
-    <el-table-column fixed label="Bệnh viện" prop="name" width="300">
+    <el-table-column label="Bệnh viện" prop="name" width="300">
     </el-table-column>
     <el-table-column label="Số điện thoại" prop="phone_num" width="300">
     </el-table-column>
-    <el-table-column label="Địa chỉ" prop="address">
+    <el-table-column label="Địa chỉ" prop="address" width="500">
     </el-table-column>
-    <el-table-column align="right">
+    <el-table-column fixed="right" align="right"  width="250">
       <template slot="header" slot-scope="scope">
         <el-button
           size="mini"
@@ -82,22 +81,17 @@ export default {
                 doc: "hospital",
                 data: {},
                 visible: false,
-                confirmed: false,
             },
             newState: {
                 title: "Bệnh viện",
                 doc: "hospital",
                 visible: false,
-                confirmed: false,
-                provinces: []
             },
             updateState: {
                 title: "Bệnh viện",
                 doc: "hospital",
                 data: {},
                 visible: false,
-                confirmed: false,
-                provinces: []
             },
             page: 1,
         };
@@ -114,35 +108,22 @@ export default {
                 this.total = data.total;
                 for (let i = 0; i < Math.min(TABLE_LIMIT, this.total - start); ++i) {
                     data.data[i].index = i + 1 + start;
-                    data.data[i].images = data.data[i].images.map(i => {
-                        return {
-                            name: i.split("/")[i.split("/").length - 1],
-                            url: i
-                    }});
                 }
                 this.tableData = data.data;
             }
-            var provinces = await searchProvince();
-            this.newState.provinces = provinces.data;
-            this.updateState.provinces = provinces.data;
         },
         handleDetail(index, row) {
             var id = row._id["$oid"];
             this.$router.push(`clinic/${id}`)
         },
         handleEdit(index, row) {
-            this.updateState = {
-                title: "Bệnh viện",
-                doc: "hospital",
-                data: row,
-                visible: true,
-                confirmed: false,
-                provinces: this.updateState.provinces,
-            };
+            this.updateState.id = row._id;
+            this.updateState.visible = true;
+            this.updateState = {...this.updateState};
         },
         handleDelete(index, row) {
-            this.deleteState.visible = true;
             this.deleteState.data = row;
+            this.deleteState.visible = true;
         },
         handleNew() {
             this.newState.visible = true;

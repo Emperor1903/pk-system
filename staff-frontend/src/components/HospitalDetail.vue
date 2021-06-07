@@ -6,7 +6,7 @@
         indicator-position="outside"
         :interval=10000>
         <el-carousel-item v-for="(item, index) in data.images" :key="index">
-          <img :src="item.url" class="image"/>
+          <img :src="item" class="image"/>
         </el-carousel-item>
       </el-carousel>      
     </el-col>
@@ -66,9 +66,6 @@ export default {
                 title: "Bệnh viện",
                 doc: "hospital",
                 visible: false,
-                data: {},
-                provinces: [],
-                confirmed: false,
             },
         };
     },
@@ -82,27 +79,12 @@ export default {
         async getData() {
             var id = {"$oid": this.id};
             var data = await getDocument("hospital", id);
-            if (data.images) {
-                data.images = data.images.map(i => {
-                    return {
-                        name: i.split("/")[i.split("/").length - 1],
-                        url: i
-                    }});
-            }
-            var provinces = await searchProvince();
             
             this.data = data;
-            this.editState.provinces = provinces.data;
         },
         async handleEdit() {
-            this.editState = {
-                title: "Bệnh viện",
-                doc: "hospital",
-                data: this.data,
-                visible: true,
-                confirmed: false,
-                provinces: this.editState.provinces,
-            };
+            this.editState.visible = true;
+            this.editState.id = this.id;
         },
         async updateData() {
             await this.getData();
