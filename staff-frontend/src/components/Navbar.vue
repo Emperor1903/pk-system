@@ -25,15 +25,30 @@
       <i class="el-icon-menu"></i>
       <span>Danh sách tỉnh/thành phố</span>
     </el-menu-item>
-
     <el-menu-item index="6">
       <i class="el-icon-menu"></i>
       <span>Danh sách ca trực</span>
     </el-menu-item>
+    <el-menu-item index="7">
+      <i class="el-icon-menu"></i>
+      <span>Danh sách quản trị viên</span>
+    </el-menu-item>
+    <el-menu-item index="8">
+      <i class="el-icon-menu"></i>
+      <span>Danh sách nhân viên</span>
+    </el-menu-item>
+    <el-menu-item index="9">
+      <i class="el-icon-caret-left"></i>
+      <span>Đăng xuất</span>
+    </el-menu-item>    
+
   </el-menu>
+  
 </template>
 
 <script>
+import {logout} from "../api/auth";
+  
 export default {
     data() {
         return {
@@ -66,7 +81,17 @@ export default {
                 break;
             case "6":
                 await this.$router.push("/shifts");
-                break;                
+                break;
+            case "7":
+                await this.$router.push("/admins");
+                break;
+            case "8":
+                await this.$router.push("/staffs");
+                break;
+            case "9":
+                await logout();
+                location.reload();
+                break;
             default:
                 break;
       }

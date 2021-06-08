@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { newSpecializtion } from "../api/admin.js";
+import { newSpecializtion } from "../api/index.js";
 export default {
   name: "NewSpeciationDialog",
   props: ["state"],

@@ -68,6 +68,9 @@ pub fn create_user
         role: role,
         clinic: form.clinic.clone(),
     };
+
+    println!("{:?}", user_info);
+    
     let _t = db::create::<User>(&user).expect("failed to create user");
     let t = db::create::<UserInfo>(&user_info);
     Some(t)
@@ -100,6 +103,21 @@ pub fn check_role
     }
 }
 
+pub fn check_staff_authority
+    (id: &Identity, clinic: bson::oid::ObjectId) -> bool
+{
+    if let Some(i) = get_identity(id) {
+        match i {
+            Ok(user) => match user.clinic {
+                Some(c) => return c == clinic,
+                None => return false                    
+            }
+            Err(_) => return false
+        }
+    }
+    return false
+}
+
 pub fn login
     (form: &UserForm, id: &Identity) -> Option<User>
 {
@@ -123,7 +141,7 @@ pub fn logout
     id.forget();
 }
 
-pub fn get_indentity
+pub fn get_identity
     (id: &Identity)
      -> Option<Result<UserInfo, mongodb::error::Error>>
 {

@@ -60,7 +60,7 @@
 
 <script>
 import { TABLE_LIMIT } from "../api/config";
-import { searchSpecialization } from "../api/admin";
+import { searchSpecialization } from "../api/index";
 export default {
   name: "SpecializationTable",
   components: {

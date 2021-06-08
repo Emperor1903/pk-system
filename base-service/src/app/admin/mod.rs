@@ -72,9 +72,9 @@ pub fn search_admin
     -> Option<Result<bson::Document, mongodb::error::Error>>
 {
     if auth::check_role(id, 0) {
-        Some(db::search_admin(SearchQuery))
+        Some(db::search_admin(query))
     } else {
-        Ok(None)
+        None
     }
 }
 
@@ -84,9 +84,9 @@ pub fn search_staff
     -> Option<Result<bson::Document, mongodb::error::Error>>
 {
     if auth::check_role(id, 0) {
-        Some(db::search_staff(SearchQuery))
+        Some(db::search_staff(query))
     } else {
-        Ok(None)
+        None
     }
 }
     
@@ -105,6 +105,7 @@ pub fn create_shifts
             let shift = Shift {
                 id: None,
                 doctor: s.doctor,
+                clinic: s.clinic,
                 client_number: 0,
                 start_time: start_time,
                 end_time: (start_time + 4 * 3600),
@@ -134,6 +135,18 @@ pub fn create_staff_user
 {
     if auth::check_role(id, 0) {
         auth::create_user(form, 1)
+    } else {
+        None
+    }
+}
+
+pub fn delete_user
+    (id: &Identity, username: String)
+     ->  Option<Result<String, mongodb::error::Error>>
+{
+    if auth::check_role(id, 0) {
+        db::delete::<User, String>(username.clone()).expect("failed to delete user");
+        Some(db::delete::<UserInfo, String>(username))
     } else {
         None
     }

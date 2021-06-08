@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import {newDoctor, searchClinic, searchSpecialization} from "../api/admin.js";
+import {newDoctor, searchClinic, searchSpecialization} from "../api/index.js";
 
 export default {
     

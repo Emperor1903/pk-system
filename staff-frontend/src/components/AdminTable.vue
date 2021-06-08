@@ -1,15 +1,13 @@
 <template>
 <div>
-  <el-table :data="tableData" style="width: 100%" border>
+  <el-table :data="tableData" style="width: 100%">
     <el-table-column fixed label="STT" prop="index" width="50">
     </el-table-column>
-    <el-table-column label="Bác sĩ" prop="doctorName" width="300">
+    <el-table-column label="Tài khoản" prop="_id" width="150">
     </el-table-column>
-    <el-table-column label="Ca số" prop="shiftDesc" width="150">
+    <el-table-column label="Vai trò" prop="role_desc" width="300">
     </el-table-column>
-    <el-table-column label="Thứ" prop="shiftDayDesc" width="150">
-    </el-table-column>
-    <el-table-column align="right" fixed="right" width="250">
+    <el-table-column fixed="right" align="right"  width="250">
       <template slot="header" slot-scope="scope">
         <el-button
           size="mini"
@@ -19,10 +17,15 @@
         <el-input
           v-model="search"
           size="mini"
-          placeholder="Tìm kiếm phòng khám"
+          placeholder="Tìm kiếm tài khoản"
           @change="handleSearch"/>
       </template>
       <template slot-scope="scope">
+        <el-button
+          size="mini"
+          icon="el-icon-edit"
+          @click="handleEdit(scope.$index, scope.row)">
+        </el-button>
         <el-button
           size="mini"
           type="danger"
@@ -36,26 +39,26 @@
     @current-change="handlePageChange"
     background
     layout="prev, pager, next"
-    :total="total"
-    >
+    :total="total">
   </el-pagination>
-    
+  
   <DeleteDialog :state="deleteState" @confirm="updateData"/>
-  <NewScheduleDialog :state="newState" @confirm="updateData"/>
+  <NewAdminDialog :state="newState" @confirm="updateData"/>
+  <!-- <UpdateAdminDialog :state="updateState" @confirm="updateData"/>     -->
 </div>
 
 </template>
 
 <script>
 import { TABLE_LIMIT } from "../api/config";
-import { searchSchedule, getDocument } from "../api/index";
+import { searchAdmin } from "../api/index";
 
 export default {
-    name: "ScheduleTable",
-    props: ["id"],
+    name: "AdminTable",
     components: {
         DeleteDialog: () => import("./DeleteDialog.vue"),
-        NewScheduleDialog: () => import("./NewScheduleDialog.vue"),
+        NewAdminDialog: () => import("./NewAdminDialog.vue"),
+        // UpdateAdminDialog: () => import("./UpdateAdminDialog.vue"),
     },
     data() {
         return {
@@ -63,20 +66,22 @@ export default {
             search: "",
             total: 0,
             deleteState: {
-                title: "",
-                doc: "schedule",
+                title: "Bệnh viện",
+                doc: "admin",
                 data: {},
                 visible: false,
-                confirmed: false,
             },
             newState: {
-                title: "Tạo bác sĩ",
-                doc: "schedule",
+                title: "Quản trị viên",
+                doc: "admin",
                 visible: false,
-                doctor: {"$oid": this.id},
             },
-            shiftDesc: ["ca 1: 8h - 12h", "ca 2: 13h - 17h"],
-            shiftDayDesc: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"],
+            updateState: {
+                title: "Quản trị viên",
+                doc: "admin",
+                data: {},
+                visible: false,
+            },
             page: 1,
         };
     },
@@ -86,26 +91,27 @@ export default {
     methods: {
         async getData(page) {
             var start = (page - 1) * TABLE_LIMIT;
-            var data = await searchSchedule(this.id, start);
+            var data = await searchAdmin(this.search, start);
+            this.tableData = [];            
             if (data) {
-                this.tableData = [];
                 this.total = data.total;
-                for (var i = 0;
-                     i < Math.min(TABLE_LIMIT, this.total - start);
-                     ++i) {
-                    data.data[i].index = i + 1 + start;
-                    var r = await getDocument("doctor", data.data[i].doctor);
-                    if (r) data.data[i].doctorName = r.name;
-                    data.data[i].shiftDesc = this.shiftDesc[data.data[i].shift_num];
-                    data.data[i].shiftDayDesc = this.shiftDayDesc[data.data[i].shift_day];
-                    console.log(data.data[i]);
+                data = data.data;
+                for (let i = 0; i < Math.min(TABLE_LIMIT, this.total - start); ++i) {
+                    data[i].index = i + 1 + start;
+                    if(data[i].role == 0) data[i].role_desc = "Quản trị viên"
+                    else if(data[i].role == 1) data[i].role_desc = "Nhân viên phòng khám"
                 }
-                this.tableData = data.data;
+                this.tableData = data;
             }
         },
+        handleEdit(index, row) {
+            this.updateState.id = row._id;
+            this.updateState.visible = true;
+            this.updateState = {...this.updateState};
+        },
         handleDelete(index, row) {
-            this.deleteState.visible = true;
             this.deleteState.data = row;
+            this.deleteState.visible = true;
         },
         handleNew() {
             this.newState.visible = true;
@@ -115,6 +121,7 @@ export default {
             await this.getData(page);
         },
         async handleSearch() {
+            console.log();
             await this.getData(1);
         },
         async updateData() {

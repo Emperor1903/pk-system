@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import {updateHospital, searchHospital, searchSpecialization} from "../api/admin.js";
+import {updateHospital, searchHospital, searchSpecialization} from "../api/index.js";
 
 export default {
     name: "UpdateHospitalDialog",

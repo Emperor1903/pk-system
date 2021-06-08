@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import {deleteDocument} from "../api/admin.js";
+import {deleteDocument} from "../api/index.js";
   
 export default {
     name: "DeleteDialog",

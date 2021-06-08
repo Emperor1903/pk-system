@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { newProvince } from "../api/admin.js";
+import { newProvince } from "../api/index.js";
 export default {
   name: "NewProvinceDialog",
   props: ["state"],

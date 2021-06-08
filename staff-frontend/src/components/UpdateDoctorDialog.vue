@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import {updateDoctor, searchClinic, searchSpecialization} from "../api/admin.js";
+import {updateDoctor, searchClinic, searchSpecialization} from "../api/index.js";
 
 export default {
     name: "UpdateDoctorDialog",

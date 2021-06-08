@@ -53,7 +53,7 @@
 </style>
 
 <script>
-import {getDocument, searchProvince} from "../api/admin.js";
+import {getDocument, searchProvince} from "../api/index.js";
 
 export default {
     name: "DeleteDialog",

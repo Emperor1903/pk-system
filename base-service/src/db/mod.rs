@@ -82,11 +82,27 @@ pub fn get_all
 pub fn search_admin
     (query: SearchQuery) -> Result<mongodb::bson::Document, mongodb::error::Error>
 {
-    query::search_admin(query.keyword, query.start, query.limit)
+    let _keyword = query.keyword;
+    let _ids = query.ids;
+    let _fields = query.fields;
+    let _start = query.start;
+    let _limit = query.limit;
+    let _start_time = query.start_time;
+    let _end_time = query.end_time;
+    
+    query::search_admin(_keyword, _start, _limit)
 }
 
 pub fn search_staff
     (query: SearchQuery) -> Result<mongodb::bson::Document, mongodb::error::Error>
 {
-    query::search_staff(query.keyword, query.ids, query.start, query.limit)
+    let _keyword = query.keyword;
+    let _ids = query.ids;
+    let _fields = query.fields;
+    let _start = query.start;
+    let _limit = query.limit;
+    let _start_time = query.start_time;
+    let _end_time = query.end_time;
+    
+    query::search_staff(_keyword, _ids, _start, _limit)
 }

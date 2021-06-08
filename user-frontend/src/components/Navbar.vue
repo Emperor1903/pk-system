@@ -1,17 +1,24 @@
 <template>
-  <div>
+<el-row type="flex" class="row-bg" justify="center">
+  <el-col :span="16">
     <el-menu
       :default-active="activeIndex"
-      class="el-menu-demo"
+      class="el-menu"
       mode="horizontal"
       @select="handleSelect"
-      background-color="#545c64"
-      text-color="#fff"
-      active-text-color="#ffd04b"
-    >
-      <el-menu-item index="1">Trang chủ</el-menu-item>
+      background-color="#409EFF"
+      text-color="#ffffff"
+      active-text-color="#fffff">
+      
+      <el-menu-item class="menu-item" index="1">Trang chủ</el-menu-item>
       <el-menu-item index="2">Tìm kiếm</el-menu-item>
       <el-menu-item index="3">Hướng dẫn</el-menu-item>
+<<<<<<< HEAD
+    </el-menu>
+    
+  </el-col>
+</el-row>
+=======
       <!-- <el-submenu index="2">
         <template slot="title">Workspace</template>
         <el-menu-item index="2-1">item one</el-menu-item>
@@ -45,10 +52,33 @@
       :state="newBookingTicketState"
     ></NewBookingTicketDialog>
   </div>
+>>>>>>> b8a70a69d7fd114e1bfcad8b202e6e22aca78198
 </template>
+
+<style>
+.invisible-box {
+    width: 400px;
+}
+</style>
 
 <script>
 export default {
+<<<<<<< HEAD
+    data() {
+        return {
+            activeIndex: "1",
+            newLedgerState: {
+                title: "Sổ khám",
+                doc: "ledger",
+                visible: false,
+            },
+            newBookingTicketState: {
+                title: "Đămg kí khám chữa bệnh",
+                doc: "bookingticket",
+                visible: false,
+            },
+        };
+=======
   components: {
     NewBookingTicketDialog: () => import("./NewBookingTicketDialog.vue"),
   },
@@ -76,10 +106,12 @@ export default {
     },
     handleNewLedger() {
       this.newLedgerState.visible = true;
+>>>>>>> b8a70a69d7fd114e1bfcad8b202e6e22aca78198
     },
-    handleNewBookingTicket() {
-      this.newBookingTicketState.visible = true;
+    methods: {
+        handleSelect(key, keyPath) {
+            console.log(key, keyPath);
+        },
     },
-  },
 };
 </script>

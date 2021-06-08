@@ -1,5 +1,11 @@
 <template>
 <div>
+  <el-pagination
+    @current-change="handlePageChange"
+    background
+    layout="prev, pager, next"
+    :total="total">
+  </el-pagination>  
   <el-table :data="tableData" style="width: 100%" border>
     <el-table-column fixed label="STT" prop="index" width="50">
     </el-table-column>
@@ -15,11 +21,6 @@
       <template slot-scope="scope">
         <el-button
           size="mini"
-          icon="el-icon-edit"
-          @click="handleEdit(scope.$index, scope.row)">
-        </el-button>
-        <el-button
-          size="mini"
           type="danger"
           icon="el-icon-delete"
           @click="handleDelete(scope.$index, scope.row)">
@@ -27,31 +28,22 @@
       </template>
     </el-table-column>
   </el-table>
-  <el-pagination
-    @current-change="handlePageChange"
-    background
-    layout="prev, pager, next"
-    :total="total"
-    >
-  </el-pagination>
   
   <DeleteDialog :state="deleteState" @confirm="updateData"/>
-  <!-- <NewShiftDialog :state="newState" @confirm="updateData"/> -->
-  <!-- <UpdateShiftDialog :state="updateState" @confirm="updateData"/> -->
 </div>
 
 </template>
 
 <script>
-import { TABLE_LIMIT } from "../api/config";
-import { searchShift, getDocument } from "../api/admin";
+const TABLE_LIMIT = 1000;
+import { searchShift, getDocument } from "../api/index";
 
 export default {
     name: "ShiftTable",
-    props: ["id", "reload"],
+    props: ["id", "reload", "history"],
     components: {
         DeleteDialog: () => import("./DeleteDialog.vue"),
-        NewShiftDialog: () => import("./NewShiftDialog.vue"),
+        // NewShiftDialog: () => import("./NewShiftDialog.vue"),
         // UpdateShiftDialog: () => import("./UpdateShiftDialog.vue"),
     },
     data() {
@@ -86,7 +78,9 @@ export default {
     methods: {
         async getData(page) {
             var start = (page - 1) * TABLE_LIMIT;
-            var data = await searchShift(this.search, this.id, start);
+            let start_time = (history) ? null : Math.floor(Date.now() / 1000)
+            var data = await searchShift(this.search, this.id, start,
+                                         TABLE_LIMIT, start_time);
             this.tableData = [];
             if (data) {
                 this.total = data.total;
@@ -105,36 +99,15 @@ export default {
         },
         timestampToDate(timestamp) {
             var date = new Date(timestamp * 1000);
-            return date.toLocaleTimeString("vi-VN") + " - " + date.toLocaleDateString("vi-VN");
+            return date.toLocaleDateString("vi-VN") + "-" + date.toLocaleTimeString("vi-VN");
         },
         handleDetail(index, row) {
             var id = row._id["$oid"];
             this.$router.push(`/doctor/${id}`)
         },
-        handleEdit(index, row) {
-            this.updateState = {
-                title: "Chỉnh sửa phòng khám",
-                doc: "shift",
-                data: row,
-                visible: true,
-                confirmed: false,
-                provinces: this.updateState.provinces,
-                hospitalName: this.updateState.hospitalName,
-            };
-        },
         handleDelete(index, row) {
             this.deleteState.visible = true;
             this.deleteState.data = row;
-        },
-        handleNew() {
-            this.newState = {
-                title: "Tạo phòng khám",
-                doc: "shift",
-                visible: true,
-                confirmed: false,
-                hospital: this.newState.hospital,
-                hospitalName: this.newState.hospitalName,
-            }
         },
         async handlePageChange(page) {
             this.page = page;

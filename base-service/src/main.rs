@@ -57,11 +57,13 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             .data(web::JsonConfig::default().limit(4096))
         // ***************Admin API
-        // Authentication
-            .service(web::resource("admin/admin/_new").route(web::post().to(api::admin::create_admin_user)))
-            .service(web::resource("admin/staff/_new").route(web::post().to(api::admin::create_staff_user)))
         // User
-            .service(web::resource("admin/user/_search").route(web::post().to(api::admin::search::<User>)))
+            .service(web::resource("admin/admin/_new").route(web::post().to(api::admin::create_admin_user)))
+            .service(web::resource("admin/admin/_search").route(web::post().to(api::admin::search_admin)))
+            .service(web::resource("admin/admin/_delete").route(web::delete().to(api::admin::delete_user)))
+            .service(web::resource("admin/staff/_new").route(web::post().to(api::admin::create_staff_user)))
+            .service(web::resource("admin/staff/_search").route(web::post().to(api::admin::search_staff)))
+            .service(web::resource("admin/staff/_delete").route(web::delete().to(api::admin::delete_user)))
         // Doctor
             .service(web::resource("admin/doctor/_get").route(web::post().to(api::admin::get::<Doctor>)))
             .service(web::resource("admin/doctor/_search").route(web::post().to(api::admin::search::<Doctor>)))
@@ -105,11 +107,68 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("admin/schedule/_new").route(web::post().to(api::admin::create::<Schedule>)))
             .service(web::resource("admin/schedule/_update").route(web::post().to(api::admin::update::<Schedule>)))
             .service(web::resource("admin/schedule/_delete").route(web::delete().to(api::admin::delete::<Schedule>)))
+        // ***************Staff API
+        // User
+            // .service(web::resource("staff/staff/_new").route(web::post().to(api::staff::create_staff_user)))
+            // .service(web::resource("staff/staff/_search").route(web::post().to(api::staff::search_staff)))
+            // .service(web::resource("staff/staff/_delete").route(web::delete().to(api::staff::delete_user)))
+        // Doctor
+            .service(web::resource("staff/doctor/_get").route(web::post().to(api::staff::get::<Doctor>)))
+            .service(web::resource("staff/doctor/_search").route(web::post().to(api::staff::search::<Doctor>)))
+            .service(web::resource("staff/doctor/_new").route(web::post().to(api::staff::create_doctor)))
+            .service(web::resource("staff/doctor/_update").route(web::post().to(api::staff::update_doctor)))
+            .service(web::resource("staff/doctor/_delete").route(web::delete().to(api::staff::delete_doctor)))
+        // Hospital
+            .service(web::resource("staff/hospital/_get").route(web::post().to(api::staff::get::<Hospital>)))
+            .service(web::resource("staff/hospital/_search").route(web::post().to(api::staff::search::<Hospital>)))
+        // Specialization
+            .service(web::resource("staff/specialization/_get").route(web::post().to(api::staff::get::<Specialization>)))
+            .service(web::resource("staff/specialization/_search").route(web::post().to(api::staff::search::<Specialization>)))
+        // Clinic
+            .service(web::resource("staff/clinic/_get").route(web::post().to(api::staff::get::<Clinic>)))
+            .service(web::resource("staff/clinic/_search").route(web::post().to(api::staff::search::<Clinic>)))
+            .service(web::resource("staff/clinic/_update").route(web::post().to(api::staff::update_clinic)))
+        // Province
+            .service(web::resource("staff/province/_get").route(web::post().to(api::staff::get::<Province>)))
+            .service(web::resource("staff/province/_search").route(web::post().to(api::staff::search::<Province>)))            
+        // Shift
+            .service(web::resource("staff/shift/_get").route(web::post().to(api::staff::get::<Shift>)))
+            .service(web::resource("staff/shift/_search").route(web::post().to(api::staff::search::<Shift>)))            
+            .service(web::resource("staff/shift/_delete").route(web::delete().to(api::staff::delete_shift)))
+            .service(web::resource("staff/shift/_new_week").route(web::post().to(api::staff::create_shifts)))
+        // Schedule
+            .service(web::resource("staff/schedule/_get").route(web::post().to(api::staff::get::<Schedule>)))
+            .service(web::resource("staff/schedule/_search").route(web::post().to(api::staff::search::<Schedule>)))
+            .service(web::resource("staff/schedule/_new").route(web::post().to(api::staff::create_schedule)))
+            .service(web::resource("staff/schedule/_delete").route(web::delete().to(api::staff::delete_schedule)))
         // ***************Public API
         // AUthentcation
-            .service(web::resource("api/auth/_me").route(web::post().to(api::auth::get_indentity)))
+            .service(web::resource("api/auth/_me").route(web::post().to(api::auth::get_identity)))
             .service(web::resource("api/auth/_login").route(web::post().to(api::auth::login)))
             .service(web::resource("api/auth/_logout").route(web::post().to(api::auth::logout)))
+        // Doctor
+            .service(web::resource("guest/doctor/_get").route(web::post().to(api::guest::get::<Doctor>)))
+            .service(web::resource("guest/doctor/_search").route(web::post().to(api::guest::search::<Doctor>)))
+        // Hospital
+            .service(web::resource("guest/hospital/_get").route(web::post().to(api::guest::get::<Hospital>)))
+            .service(web::resource("guest/hospital/_search").route(web::post().to(api::guest::search::<Hospital>)))
+        // Specialization
+            .service(web::resource("guest/specialization/_get").route(web::post().to(api::guest::get::<Specialization>)))
+            .service(web::resource("guest/specialization/_search").route(web::post().to(api::guest::search::<Specialization>)))
+        // Clinic
+            .service(web::resource("guest/clinic/_get").route(web::post().to(api::guest::get::<Clinic>)))
+            .service(web::resource("guest/clinic/_search").route(web::post().to(api::guest::search::<Clinic>)))
+        // Province
+            .service(web::resource("guest/province/_get").route(web::post().to(api::guest::get::<Province>)))
+            .service(web::resource("guest/province/_search").route(web::post().to(api::guest::search::<Province>)))            
+        // Shift
+            .service(web::resource("guest/shift/_get").route(web::post().to(api::guest::get::<Shift>)))
+            .service(web::resource("guest/shift/_search").route(web::post().to(api::guest::search::<Shift>)))            
+        // Schedule
+            .service(web::resource("guest/schedule/_get").route(web::post().to(api::guest::get::<Schedule>)))
+            .service(web::resource("guest/schedule/_search").route(web::post().to(api::guest::search::<Schedule>)))
+
+            
     }).bind_openssl(host_url, load_ssl())?
         .run()
         .await

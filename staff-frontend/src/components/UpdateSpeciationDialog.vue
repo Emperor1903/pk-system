@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { updateSpecialization } from "../api/admin.js";
+import { updateSpecialization } from "../api/index.js";
 
 export default {
   name: "UpdateSpeciationDialog",

@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import {createShifts} from "../api/admin.js";
+import {createShifts} from "../api/index.js";
   
 export default {
     name: "AutoCreateShiftDialog",

@@ -16,63 +16,74 @@ const routes = [
         path: "/",
         name: "Hospital",
         component: () => import("../views/Hospital.vue"),
-        meta: { admin: true }
+        meta: { auth: true }
     },
     {
         path: "/clinic/:id",
         name: "Clinic",
         component: () => import("../views/Clinic.vue"),
-        meta: { admin: true }
+        meta: { auth: true }
     },
     {
         path: "/clinics",
-        name: "AllClinic",
+        name: "Clinics",
         component: () => import("../views/Clinic.vue"),
-        meta: { admin: true }
+        meta: { auth: true }
     },
     {
         path: "/specializations",
         name: "Specializations",
         component: () => import("../views/Specializations.vue"),
-        meta: { admin: true }
+        meta: { auth: true }
     },
     {
         path: "/provinces",
         name: "Provinces",
         component: () => import("../views/Provinces.vue"),
-        meta: { admin: true }
+        meta: { auth: true }
     },
     {
         path: "/doctor/:id",
-        name: "Doctor",
+        name: "DoctorsInClinic",
         component: () => import("../views/Doctor.vue"),
-        meta: { admin: true }
+        meta: { auth: true }
     },
     {
         path: "/doctors",
-        name: "AllDoctor",
+        name: "Doctors",
         component: () => import("../views/Doctor.vue"),
-        meta: { admin: true }
+        meta: { auth: true }
     },
     {
         path: "/schedule/:id",
-        name: "Schedule",
+        name: "ScheduleInDoctors",
         component: () => import("../views/Schedule.vue"),
-        meta: { admin: true }
+        meta: { auth: true }
     },
     {
         path: "/shift/:id",
-        name: "Shift",
+        name: "ShiftsInDoctors",
         component: () => import("../views/Shift.vue"),
-        meta: { admin: true }
+        meta: { auth: true }
     },
     {
         path: "/shifts",
-        name: "AllShift",
+        name: "Shifts",
         component: () => import("../views/Shift.vue"),
-        meta: { admin: true }
+        meta: { auth: true }
     },
-
+    {
+        path: "/admins",
+        name: "Admins",
+        component: () => import("../views/AdminUser.vue"),
+        meta: { auth: true }
+    },
+    {
+        path: "/staff",
+        name: "Staff",
+        component: () => import("../views/StaffUser.vue"),
+        meta: { auth: true }
+    },
 ];
 
 const router = new VueRouter({
@@ -81,9 +92,10 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-    if (to.matched.some(record => record.meta.admin)) {
-        var identity = await getIdentity();
-        if (identity && identity.role == 0) {
+
+    if (to.matched.some(record => record.meta.auth)) {
+        var identity = await getIdentity();                        
+        if (identity) {
             next();
             return;
         }
@@ -91,20 +103,26 @@ router.beforeEach(async (to, from, next) => {
     } else {
         next();
     }
-})
+
+});
 
 router.beforeEach(async (to, from, next) => {
     if (to.matched.some(record => record.meta.guest)) {
         var identity = await getIdentity();
-        if (identity && identity.role == 0) {
-            next("/");
-            return;
-        }
+        if (identity) {
+            if(identity.role == 0) {
+                next("/");
+                return;
+            } else if (identity.role == 1) {
+                next(`/doctor/${identity.clinic["$oid"]}`);
+                return;
+            }
+        } 
         next();
     } else {
         next();
     }
-})
+});
 
 
 

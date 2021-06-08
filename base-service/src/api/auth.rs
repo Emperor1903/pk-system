@@ -23,10 +23,10 @@ pub async fn logout
     HttpResponse::Ok().body("Ok")
 }
 
-pub async fn get_indentity
+pub async fn get_identity
     (id: Identity) -> HttpResponse
 {
-    match auth::get_indentity(&id) {
+    match auth::get_identity(&id) {
         Some(user) => do_response(user).await,
         None => HttpResponse::Ok().body("")
     }

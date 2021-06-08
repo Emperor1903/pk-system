@@ -75,7 +75,8 @@ pub struct Province {
 pub struct Schedule {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<ObjectId>,
-    pub doctor: Option<ObjectId>,
+    pub doctor: ObjectId,
+    pub clinic: ObjectId,
     pub shift_num: i32,
     pub shift_day: i32,
 }
@@ -84,7 +85,8 @@ pub struct Schedule {
 pub struct Shift {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<ObjectId>,
-    pub doctor: Option<ObjectId>,
+    pub doctor: ObjectId,
+    pub clinic: ObjectId,
     pub client_number: i32,
     pub start_time: i32, // timestamp in second
     pub end_time: i32, // timestamp in second    
@@ -127,4 +129,3 @@ pub struct UserInfo {
     #[serde(skip_serializing_if = "Option::is_none")]        
     pub clinic: Option<ObjectId>
 }
-

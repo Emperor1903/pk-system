@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import {updateHospital, searchHospital, searchSpecialization, searchProvince, newHospital} from "../api/admin.js";
+import {searchProvince, newHospital} from "../api/index.js";
 
 export default {
     name: "NewHospitalDialog",
@@ -83,7 +83,7 @@ export default {
         }
     },
     watch: {
-        visible: async function(val) {
+        visible: async function() {
             this.fields = {...this.fields};
         }
     },
