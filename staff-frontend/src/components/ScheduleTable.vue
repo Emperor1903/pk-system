@@ -25,13 +25,6 @@
       <template slot-scope="scope">
         <el-button
           size="mini"
-          type="text"
-          @click="handleDetail(scope.$index, scope.row)">
-          Chi tiết
-        </el-button>
-        
-        <el-button
-          size="mini"
           type="danger"
           icon="el-icon-delete"
           @click="handleDelete(scope.$index, scope.row)">
@@ -55,7 +48,7 @@
 
 <script>
 import { TABLE_LIMIT } from "../api/config";
-import { searchSchedule, getDocument } from "../api/admin";
+import { searchSchedule, getDocument } from "../api/index";
 
 export default {
     name: "ScheduleTable",
@@ -94,8 +87,8 @@ export default {
         async getData(page) {
             var start = (page - 1) * TABLE_LIMIT;
             var data = await searchSchedule(this.id, start);
-            this.tableData = [];
             if (data) {
+                this.tableData = [];
                 this.total = data.total;
                 for (var i = 0;
                      i < Math.min(TABLE_LIMIT, this.total - start);
@@ -109,10 +102,6 @@ export default {
                 }
                 this.tableData = data.data;
             }
-        },
-        handleDetail(index, row) {
-            // var id = row._id["$oid"];
-            // this.$router.push(`/schedule/${id}`)
         },
         handleDelete(index, row) {
             this.deleteState.visible = true;

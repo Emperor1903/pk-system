@@ -56,7 +56,7 @@
 </div>
 </template>
 <script>
-import {getDocument} from "../api/admin.js";
+import {getDocument} from "../api/index.js";
 
 export default {
     name: "Form",

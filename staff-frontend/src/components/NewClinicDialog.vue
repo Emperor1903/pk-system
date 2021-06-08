@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import {newClinic, uploadImage, searchHospital} from "../api/admin.js";
+import {newClinic, uploadImage, searchHospital} from "../api/index.js";
 
 export default {
     name: "NewClinicDialog",

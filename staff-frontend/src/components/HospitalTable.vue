@@ -62,7 +62,7 @@
 
 <script>
 import { TABLE_LIMIT } from "../api/config";
-import { searchHospital, searchProvince } from "../api/admin";
+import { searchHospital, searchProvince } from "../api/index";
 
 export default {
     name: "HospitalTable",

@@ -1,10 +1,12 @@
 import { API_URL, TABLE_LIMIT } from "./config";
 import {removeVietnameseTones} from "./utils";
+import {getRole} from "./auth";
 
 async function
 newDocument(name, body) {
     try {
-        var url = `${API_URL}/admin/${name}/_new`;
+        var role = await getRole();
+        var url = `${API_URL}/${role}/${name}/_new`;
         const options = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -21,7 +23,8 @@ newDocument(name, body) {
 export async function
 createShifts() {
     try {
-        var url = `${API_URL}/admin/shift/_new_week`;
+        var role = await getRole();
+        var url = `${API_URL}/${role}/shift/_new_week`;
         const options = {
             method: "POST",
         }
@@ -35,9 +38,20 @@ createShifts() {
 }
 
 async function
-searchDocument(name, keyword, fields, ids, start, limit) {
+searchDocument(
+    name,
+    keyword,
+    fields,
+    ids,
+    start,
+    limit,
+    start_time,
+    end_time) {
+    
     try {
-        var url = new URL(`${API_URL}/admin/${name}/_search`);
+        keyword = removeVietnameseTones(keyword);
+        var role = await getRole();
+        var url = `${API_URL}/${role}/${name}/_search`;        
         if (!keyword) keyword = null;
         if (!fields || !ids) {
             fields = null;
@@ -53,7 +67,9 @@ searchDocument(name, keyword, fields, ids, start, limit) {
                 ids: ids,
                 fields: fields,
                 start: start,
-                limit: limit
+                limit: limit,
+                start_time: start_time,
+                end_time,
             }),
         };
         var response = await fetch(url, options);
@@ -72,7 +88,8 @@ searchDocument(name, keyword, fields, ids, start, limit) {
 async function
 updateDocument(name, id, body) {
     try {
-        var url = `${API_URL}/admin/${name}/_update`;
+        var role = await getRole();
+        var url = `${API_URL}/${role}/${name}/_update`;
         const options = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -92,7 +109,8 @@ updateDocument(name, id, body) {
 export async function
 getDocument(name, id) {
     try {
-        var url = `${API_URL}/admin/${name}/_get`;
+        var role = await getRole();
+        var url = `${API_URL}/${role}/${name}/_get`;        
         const options = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -111,7 +129,8 @@ getDocument(name, id) {
 export async function
 deleteDocument(name, id) {
     try {
-        var url = `${API_URL}/admin/${name}/_delete`;
+        var role = await getRole();
+        var url = `${API_URL}/${role}/${name}/_delete`;
         const options = {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
@@ -132,6 +151,7 @@ newSpecializtion(name, desc) {
         desc: desc,
         search_keyword: removeVietnameseTones(name),
     });
+    return data;
 }
 
 export async function
@@ -240,7 +260,7 @@ newDoctor(
         email: email,
         phone_num: phoneNum,
         images: images,
-        keyword:  removeVietnameseTones(position + " " + name),
+        search_keyword:  removeVietnameseTones(position + " " + name),
     });
     return data;
 }
@@ -251,7 +271,7 @@ searchHospital(
     start,
     limit = TABLE_LIMIT
 ) {
-    var data = await searchDocument("hospital", keyword, null, null, start, limit);
+    var data = await searchDocument("hospital", keyword, null, null, start, limit, null, null);
     return data;
 }
 
@@ -267,12 +287,7 @@ searchClinic(
     if (hospital) {
         ids = [{"$oid": hospital}];
     }
-    var data = await searchDocument("clinic",
-                                    keyword,
-                                    fields,
-                                    ids,
-                                    start,
-                                    limit);
+    var data = await searchDocument("clinic", keyword, fields, ids, start, limit, null, null);
     return data;
 }
 
@@ -288,12 +303,7 @@ searchDoctor(
     if (clinic) {
         ids = [{"$oid": clinic}];
     }
-    var data = await searchDocument("doctor",
-                                    keyword,
-                                    fields,
-                                    ids,
-                                    start,
-                                    limit);
+    var data = await searchDocument("doctor", keyword, fields, ids, start, limit, null, null);
     return data;
 }
 
@@ -309,22 +319,24 @@ searchSchedule(
     if (doctor) {
         ids = [{"$oid": doctor}];
     }
-    var data = await searchDocument("schedule", null, fields, ids, start, limit);
+    var data = await searchDocument("schedule", null, fields, ids, start, limit, null, null);
     return data;
 }
 
 export async function
 searchShift(
-    doctor,
+    keyword,
+    clinic,
     start,
-    limit=TABLE_LIMIT
+    limit=TABLE_LIMIT,
+    start_time=null,
 ) {
-    var fields = ["doctor"];
+    var fields = ["clinic"];
     var ids = [];
-    if (doctor) {
-        ids = [{"$oid": doctor}];
+    if (clinic) {
+        ids = [{"$oid": clinic}];
     }
-    var data = await searchDocument("shift", null, fields, ids, start, limit);
+    var data = await searchDocument("shift", keyword, fields, ids, start, limit, start_time, null);
     return data;
 }
 
@@ -334,7 +346,7 @@ searchAdmin(
     start,
     limit=TABLE_LIMIT
 ) {
-    var data = await searchDocument("admin", keyword, null, null, start, limit);
+    var data = await searchDocument("admin", keyword, null, null, start, limit, null, null);
     return data;
 }
 
@@ -346,7 +358,7 @@ searchStaff(
     limit=TABLE_LIMIT
 ) {
     var ids = clinic ? [{"$oid": clinic}] : null;
-    var data = await searchDocument("staff", keyword, null, ids, start, limit);
+    var data = await searchDocument("staff", keyword, null, ids, start, limit, null, null);
     return data;
 }
 
@@ -356,13 +368,13 @@ searchSpecialization(
     start,
     limit = TABLE_LIMIT
 ){
-    let data = await searchDocument("specialization", keyword, null, null, start, limit);
+    let data = await searchDocument("specialization", keyword, null, null, start, limit, null, null);
     return data;
 }
 
 export async function
 searchProvince() {
-    var data = await searchDocument("province", null, null, null, 0, 1000);
+    var data = await searchDocument("province", null, null, null, 0, 1000, null, null);
     return data;
 }
 
@@ -378,6 +390,7 @@ updateHospital(id, name, desc, province, address, phoneNum, images=[]) {
         images: images,
         search_keyword: removeVietnameseTones(name + " " + address),        
     });
+    return data;
 }
 
 export async function
@@ -405,7 +418,7 @@ updateDoctor(
             email: email,
             phone_num: phoneNum,
             images: images,
-            keyword:  removeVietnameseTones(position + " " + name),
+            search_keyword: removeVietnameseTones(position + " " + name),
         });
     return data;
 }

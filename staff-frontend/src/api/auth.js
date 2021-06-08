@@ -10,8 +10,10 @@ authenticate(username, password) {
         },
         body: `username=${username}&password=${password}`
     };
+    console.log("FUCK");
     var response = await fetch(url, options);
     var data = await response.text();
+    console.log(data);
     return data;
 }
 
@@ -28,6 +30,21 @@ getIdentity() {
     } catch (err) {
         return null;
     }    
+}
+
+export async function
+getRole() {
+    var url = `${API_URL}/api/auth/_me`;
+    const options = {
+        method: "POST",
+    }
+    try {
+        var response = await fetch(url, options);
+        var data = await response.json();
+        return data.role == 0 ? "admin" : "staff";
+    } catch (err) {
+        return null;
+    }
 }
 
 export async function

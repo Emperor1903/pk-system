@@ -8,19 +8,21 @@
     <el-card shadow="never">
       <el-button round type="primary" @click="autoCreateShiftState.visible = true">
         Tạo ca cho tuần sau
-      </el-button> 
-      <el-button round @click="filterShiftState.visible = true">
-        Lọc kết quả
-      </el-button> 
+      </el-button>
+      <el-button round type="success" @click="exportToCsv" >
+        Xuất file csv
+      </el-button>     
 
       <el-main>
-        <ShiftTable :id="id" :reload="reload" @reloaded="handleReloaded"/>
+        <ShiftTable :id="$route.params.id"
+                    :reload="reload"
+                    @reloaded="handleReloaded"
+                    ref="shiftTable"/>
       </el-main>
     </el-card>
   </el-col>
 
   <AutoCreateShiftDialog :state="autoCreateShiftState" @confirm="handleCreateShiftConfirm"/>
-  <FilterShiftDialog :state="filterShiftState" @confirm="handleFilterShiftConfirm"/>  
   
 </el-row>
 </template>
@@ -39,32 +41,43 @@ export default {
     components: {
         ShiftTable: () => import("../components/ShiftTable.vue"),
         AutoCreateShiftDialog: () => import("../components/AutoCreateShiftDialog.vue"),
-        FilterShiftDialog: () => import("../components/FilterShiftDialog.vue"),
     },
     data() {
         return {
-            id: null,
             reload: false,
             autoCreateShiftState: {
                 visible: false,
             },
-            filterShiftState: {
-                visible: false,
-            },
+            history: false,
         }
     },
-    mounted() {
-        this.id = this.$route.params.id;
-    },
     methods: {
-        handleCreateShiftConfirm() {
-            this.reload = true;
+        handleHistory() {
+            this.history = !this.history;
         },
-        handleFilterShiftConfirm() {
+        handleCreateShiftConfirm() {
             this.reload = true;
         },
         handleReloaded() {
             this.reload = false;
+        },
+        exportToCsv() {
+            var data = this.$refs.shiftTable.tableData;
+            var rows = data.map(i => 
+                [i.doctor_name, i.client_number, i.start_datetime, i.end_datetime]
+            );
+
+            console.log(rows);
+            var csvContent = "data:text/csv;charset=utf-8," 
+                + rows.map(e => e.join(",")).join("\n");
+            
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "ca_truc.csv");
+            document.body.appendChild(link); // Required for FF
+
+            link.click(); 
         }
     }
 };

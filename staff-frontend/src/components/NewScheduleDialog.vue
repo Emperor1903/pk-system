@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import {newSchedule, searchClinic, searchDoctor, getDocument} from "../api/admin.js";
+import {newSchedule, searchClinic, searchDoctor, getDocument} from "../api/index.js";
 
 export default {
     
@@ -127,10 +127,11 @@ export default {
             if (data) {
                 this.loading = true;
                 console.log(data);
+                let res = await getDocument("doctor", data.doctor);
                 try {
                     await newSchedule(
                         data.doctor,
-                        data.clinic,
+                        res.clinic,
                         data.shift_num,
                         data.shift_day,
                     );

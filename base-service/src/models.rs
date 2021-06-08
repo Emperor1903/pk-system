@@ -76,7 +76,7 @@ pub struct Schedule {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<ObjectId>,
     pub doctor: ObjectId,
-    pub clinic: ObjectId,    
+    pub clinic: ObjectId,
     pub shift_num: i32,
     pub shift_day: i32,
 }
@@ -129,4 +129,3 @@ pub struct UserInfo {
     #[serde(skip_serializing_if = "Option::is_none")]        
     pub clinic: Option<ObjectId>
 }
-

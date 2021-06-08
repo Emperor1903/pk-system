@@ -64,7 +64,7 @@
 
 <script>
 import { TABLE_LIMIT } from "../api/config";
-import { searchDoctor, getDocument } from "../api/admin";
+import { searchDoctor, getDocument } from "../api/index";
 
 export default {
     name: "DoctorTable",

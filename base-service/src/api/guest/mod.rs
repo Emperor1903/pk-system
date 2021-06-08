@@ -6,14 +6,16 @@ use mongodb::bson::oid::ObjectId;
 
 use crate::models::*;
 use crate::db;
-use crate::api::{do_response, form::{SearchQuery}};
+use crate::app::*;
+use crate::api::{do_response, form::*};
 
 
 pub async fn search
     <T:'static +  Serialize + DeserializeOwned + Unpin + Debug+ Sync + std::marker::Send + Clone>
-    (web::Query(query): web::Query<SearchQuery>) -> HttpResponse
+    (query: web::Json<SearchQuery>) -> HttpResponse
 {
-    do_response(db::search::<T>(query)).await
+    let data = query.into_inner();
+    do_response(guest::search::<T>(data)).await
 }
 
 pub async fn get
@@ -21,12 +23,5 @@ pub async fn get
     (item: web::Json<ObjectId>) -> HttpResponse
 {
     let data = item.into_inner();
-    do_response(db::get::<T, ObjectId>(data)).await
-}
-
-pub async fn create
-    (item: web::Json<BookingTicket>) -> HttpResponse
-{
-    let data = item.into_inner();
-    do_response(db::create::<BookingTicket>(&data)).await    
+    do_response(guest::get::<T>(data)).await
 }

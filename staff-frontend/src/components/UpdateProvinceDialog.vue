@@ -16,7 +16,7 @@
   </el-dialog>
 </template>
 <script>
-import { updateProvince } from "../api/admin.js";
+import { updateProvince } from "../api/index.js";
 export default {
   name: "UpdateProvinceDialog",
   props: ["state"],

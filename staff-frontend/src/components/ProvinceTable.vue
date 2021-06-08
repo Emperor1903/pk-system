@@ -51,7 +51,7 @@
 
 <script>
 import { TABLE_LIMIT } from "../api/config";
-import { searchProvince } from "../api/admin";
+import { searchProvince } from "../api/index";
 
 export default {
   name: "ProvinceTable",

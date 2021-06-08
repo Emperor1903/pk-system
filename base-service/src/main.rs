@@ -146,6 +146,28 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("api/auth/_me").route(web::post().to(api::auth::get_identity)))
             .service(web::resource("api/auth/_login").route(web::post().to(api::auth::login)))
             .service(web::resource("api/auth/_logout").route(web::post().to(api::auth::logout)))
+        // Doctor
+            .service(web::resource("guest/doctor/_get").route(web::post().to(api::guest::get::<Doctor>)))
+            .service(web::resource("guest/doctor/_search").route(web::post().to(api::guest::search::<Doctor>)))
+        // Hospital
+            .service(web::resource("guest/hospital/_get").route(web::post().to(api::guest::get::<Hospital>)))
+            .service(web::resource("guest/hospital/_search").route(web::post().to(api::guest::search::<Hospital>)))
+        // Specialization
+            .service(web::resource("guest/specialization/_get").route(web::post().to(api::guest::get::<Specialization>)))
+            .service(web::resource("guest/specialization/_search").route(web::post().to(api::guest::search::<Specialization>)))
+        // Clinic
+            .service(web::resource("guest/clinic/_get").route(web::post().to(api::guest::get::<Clinic>)))
+            .service(web::resource("guest/clinic/_search").route(web::post().to(api::guest::search::<Clinic>)))
+        // Province
+            .service(web::resource("guest/province/_get").route(web::post().to(api::guest::get::<Province>)))
+            .service(web::resource("guest/province/_search").route(web::post().to(api::guest::search::<Province>)))            
+        // Shift
+            .service(web::resource("guest/shift/_get").route(web::post().to(api::guest::get::<Shift>)))
+            .service(web::resource("guest/shift/_search").route(web::post().to(api::guest::search::<Shift>)))            
+        // Schedule
+            .service(web::resource("guest/schedule/_get").route(web::post().to(api::guest::get::<Schedule>)))
+            .service(web::resource("guest/schedule/_search").route(web::post().to(api::guest::search::<Schedule>)))
+
             
     }).bind_openssl(host_url, load_ssl())?
         .run()

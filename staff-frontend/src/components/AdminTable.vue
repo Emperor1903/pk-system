@@ -44,21 +44,21 @@
   
   <DeleteDialog :state="deleteState" @confirm="updateData"/>
   <NewAdminDialog :state="newState" @confirm="updateData"/>
-  <UpdateAdminDialog :state="updateState" @confirm="updateData"/>    
+  <!-- <UpdateAdminDialog :state="updateState" @confirm="updateData"/>     -->
 </div>
 
 </template>
 
 <script>
 import { TABLE_LIMIT } from "../api/config";
-import { searchAdmin } from "../api/admin";
+import { searchAdmin } from "../api/index";
 
 export default {
     name: "AdminTable",
     components: {
         DeleteDialog: () => import("./DeleteDialog.vue"),
         NewAdminDialog: () => import("./NewAdminDialog.vue"),
-        UpdateAdminDialog: () => import("./UpdateAdminDialog.vue"),
+        // UpdateAdminDialog: () => import("./UpdateAdminDialog.vue"),
     },
     data() {
         return {

@@ -55,14 +55,14 @@
   
   <DeleteDialog :state="deleteState" @confirm="updateData"/>
   <NewStaffDialog :state="newState" @confirm="updateData"/>
-  <UpdateStaffDialog :state="updateState" @confirm="updateData"/>    
+  <!-- <UpdateStaffDialog :state="updateState" @confirm="updateData"/>     -->
 </div>
 
 </template>
 
 <script>
 import { TABLE_LIMIT } from "../api/config";
-import { searchStaff, getDocument } from "../api/admin";
+import { searchStaff, getDocument } from "../api/index";
 
 export default {
     name: "StaffTable",
@@ -70,7 +70,7 @@ export default {
     components: {
         DeleteDialog: () => import("./DeleteDialog.vue"),
         NewStaffDialog: () => import("./NewStaffDialog.vue"),
-        UpdateStaffDialog: () => import("./UpdateStaffDialog.vue"),
+        // UpdateStaffDialog: () => import("./UpdateStaffDialog.vue"),
     },
     data() {
         return {
@@ -117,10 +117,6 @@ export default {
                 }
                 this.tableData = data;
             }
-        },
-        handleDetail(index, row) {
-            // var id = row._id["$oid"];
-            // this.$router.push(`clinic/${id}`)
         },
         handleEdit(index, row) {
             this.updateState.id = row._id;

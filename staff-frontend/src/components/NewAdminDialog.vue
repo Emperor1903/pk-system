@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { newAdmin } from "../api/admin.js";
+import { newAdmin } from "../api/index.js";
 export default {
     name: "NewAdminDialog",
     props: ["state"],

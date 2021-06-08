@@ -1,9 +1,14 @@
 <template>
   <div id="app">
+<<<<<<< HEAD
+    <Navbar/>
+    <router-view />
+=======
     <Navbar />
     <el-col>
       <router-view />
     </el-col>
+>>>>>>> b8a70a69d7fd114e1bfcad8b202e6e22aca78198
   </div>
 </template>
 
@@ -13,18 +18,8 @@ import Navbar from "./components/Navbar.vue";
 export default {
   name: "app",
   components: {
-    Navbar: () => import("./components/Navbar"),
+      Navbar: () => import("./components/Navbar"),
   },
 };
 </script>
 
-<style>
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 0px;
-}
-</style>

@@ -61,7 +61,7 @@
 </div>
 </template>
 <script>
-import {getDocument, uploadImage} from "../api/admin.js";
+import {getDocument, uploadImage} from "../api/index.js";
 
 export default {
     name: "FormWithImage",

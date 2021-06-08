@@ -62,7 +62,7 @@
 
 <script>
 import { TABLE_LIMIT } from "../api/config";
-import { searchClinic, getDocument } from "../api/admin";
+import { searchClinic, getDocument } from "../api/index";
 
 export default {
     name: "ClinicTable",

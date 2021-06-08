@@ -112,7 +112,7 @@ pub fn delete_schedule
     let schedule = db::get::<Schedule, ObjectId>(oid.clone()).unwrap();
     let doctor = get_doctor(id, schedule.doctor.clone()).unwrap();
     match doctor {
-        Some(_) => Some(db::delete::<Doctor, ObjectId>(oid.clone())),
+        Some(_) => Some(db::delete::<Schedule, ObjectId>(oid.clone())),
         None => None
     }
 }
@@ -124,7 +124,7 @@ pub fn delete_shift
     let shift = db::get::<Shift, ObjectId>(oid.clone()).unwrap();
     let doctor = get_doctor(id, shift.doctor.clone()).unwrap();
     match doctor {
-        Some(_) => Some(db::delete::<Doctor, ObjectId>(oid.clone())),
+        Some(_) => Some(db::delete::<Shift, ObjectId>(oid.clone())),
         None => None
     }
 }
@@ -136,8 +136,11 @@ pub fn create_shifts
         let user = auth::get_identity(id).unwrap()?;
         let shift_hour: [i32; 2] = [8, 13];
         let schedules = db::get_all::<Schedule>()?;
+        println!("{:?}", schedules);
         for s in schedules {
+            println!("FUCKEEE");
             if s.clinic == user.clinic.clone().unwrap() {
+                println!("FUCK");
                 let timestamp = get_timestamp_now();
                 let nw_timestamp = get_timestamp_next_week(timestamp);            
                 let shift_day_timestamp = get_timestamp_dow(nw_timestamp, s.shift_day);

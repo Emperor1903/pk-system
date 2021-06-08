@@ -1,24 +1,15 @@
 <template>
 <el-row type="flex" justify="center">
   <el-col>
-    <span v-if="id">
-      <DoctorDetail :id="id"/>
+    <span v-if="$route.params.id">
+      <DoctorDetail :id="$route.params.id"/>
     </span>
     <el-header style="text-align: left; font-size: 24px">
       <span>Danh sách lịch trình</span>
     </el-header>
     <el-card shadow="never">
       <el-main>
-        <ScheduleTable :id="id"/>
-      </el-main>
-    </el-card>
-
-    <el-header style="text-align: left; font-size: 24px">
-      <span>Danh sách ca trực</span>
-    </el-header>
-    <el-card shadow="never">
-      <el-main>
-        <ShiftTable :id="id"/>
+        <ScheduleTable :id="$route.params.id"/>
       </el-main>
     </el-card>
   </el-col>
@@ -39,15 +30,6 @@ export default {
     components: {
         DoctorDetail: () => import("../components/DoctorDetail.vue"),
         ScheduleTable: () => import("../components/ScheduleTable.vue"),
-        ShiftTable: () => import("../components/ShiftTable.vue"),        
-    },
-    data() {
-        return {
-            id: null,
-        }
-    },
-    mounted() {
-        this.id = this.$route.params.id;
     },
 };
 </script>

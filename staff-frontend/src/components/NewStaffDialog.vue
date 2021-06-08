@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { newStaff, searchClinic } from "../api/admin.js";
+import { newStaff, searchClinic } from "../api/index.js";
 export default {
     name: "NewAdminDialog",
     props: ["state"],
